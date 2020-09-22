@@ -1,3 +1,0 @@
-U:\SilentRed\SilentRed\Intermediate\Build\Win64\UE4Editor\Development\SilentRed\Definitions.SilentRed.h
-C:\UE_4.25\Engine\Source\Runtime\CoreUObject\Public\UObject/GeneratedCppIncludes.h
-C:\UE_4.25\Engine\Source\Runtime\CoreUObject\Public\UObject/MetaData.h
