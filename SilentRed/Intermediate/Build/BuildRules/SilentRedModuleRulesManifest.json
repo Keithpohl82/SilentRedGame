@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"U:\\SilentRed\\SilentRed\\Source\\SilentRed\\SilentRed.Build.cs",
+		"U:\\SilentRed\\SilentRed\\Source\\SilentRed.Target.cs",
+		"U:\\SilentRed\\SilentRed\\Source\\SilentRedEditor.Target.cs"
+	],
+	"EngineVersion": "4.25.3"
+}

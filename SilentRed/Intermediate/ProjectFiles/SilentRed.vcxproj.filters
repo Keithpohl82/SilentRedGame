@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\SilentRed.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{EDF96775-D348-4981-9913-5B030DF26FC0}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\SilentRed.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\SilentRedEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{7B4248E1-C9ED-4983-84DD-50763D3C046D}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\SilentRed">
+      <UniqueIdentifier>{5BF6B76B-29C2-4132-830E-1EB4E5472B03}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\SilentRed\SilentRed.Build.cs">
+      <Filter>Source\SilentRed</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\SilentRed\SilentRed.cpp">
+      <Filter>Source\SilentRed</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SilentRed\SilentRed.h">
+      <Filter>Source\SilentRed</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\SilentRed\SilentRedGameModeBase.cpp">
+      <Filter>Source\SilentRed</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SilentRed\SilentRedGameModeBase.h">
+      <Filter>Source\SilentRed</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
