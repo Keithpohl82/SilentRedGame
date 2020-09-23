@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "DrawDebugHelpers.h"
+#include "SilentRed/Public/Weapons/BaseProjectile.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -81,6 +83,39 @@ void ABaseCharacter::Dive()
 	GetMesh()->PlayAnimation(DiveAnim, bLoop);
 }
 
+void ABaseCharacter::Fire()
+{
+	// Attempt to fire a projectile.
+	if (ProjectileClass)
+	{
+		// Get the camera transform.
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+		// Transform MuzzleOffset from camera space to world space.
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+		FRotator MuzzleRotation = CameraRotation;
+		// Skew the aim to be slightly upwards.
+		MuzzleRotation.Pitch += 10.0f;
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = this;
+			// Spawn the projectile at the muzzle.
+			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			if (Projectile)
+			{
+				// Set the projectile's initial trajectory.
+				FVector LaunchDirection = MuzzleRotation.Vector();
+				Projectile->FireInDirection(LaunchDirection);
+			}
+		}
+	}
+}
+
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
@@ -105,5 +140,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 
 	PlayerInputComponent->BindAction(TEXT("Dive"), IE_Pressed, this, &ABaseCharacter::Dive);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
 }
 

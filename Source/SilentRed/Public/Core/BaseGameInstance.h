@@ -6,6 +6,9 @@
 #include "Engine/GameInstance.h"
 #include "BaseGameInstance.generated.h"
 
+
+//Demo and Replay system gos in here.
+
 /**
  * 
  */

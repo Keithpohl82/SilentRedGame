@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "MasterPlayerController.generated.h"
 
+//NOT REPLICATED players only know of their own.
+
 /**
  * 
  */

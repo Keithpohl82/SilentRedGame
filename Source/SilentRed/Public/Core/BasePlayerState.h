@@ -6,6 +6,13 @@
 #include "GameFramework/PlayerState.h"
 #include "BasePlayerState.generated.h"
 
+//Replicated to everyone
+//Player Name
+//Player Score
+//Player Ping
+//Player Unique ID (if any)
+
+
 /**
  * 
  */

@@ -8,6 +8,7 @@
 
 //forward declarations
 class UCameraComponent;
+class ABaseProjectile;
 
 UCLASS()
 class SILENTRED_API ABaseCharacter : public ACharacter
@@ -37,6 +38,9 @@ protected:
 	void BeginCrouch();
 	void EndCrouch();
 	void Dive();
+	void Fire();
+
+
 
 public:	
 	// Called every frame
@@ -44,5 +48,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Gun muzzle's offset from the camera location.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FVector MuzzleOffset;
+
+	// Projectile class to spawn.
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class ABaseProjectile> ProjectileClass;
 
 };
