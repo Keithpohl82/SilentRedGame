@@ -30,8 +30,7 @@ public:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player")
 	//USkeletalMeshComponent* Mesh1P;
 
-		UPROPERTY(BlueprintReadOnly)
-		int32 TeamNum = 0;
+
 
 		UPROPERTY(EditDefaultsOnly, Category = "Flag")
 		FName FlagAttachSocketName;
@@ -49,7 +48,7 @@ protected:
 	void StopFire();
 	void ReloadGun();
 
-	void SetPlayerSkin();
+	
 
 
 	UFUNCTION()
@@ -87,9 +86,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Health)
 	float GetArmor();
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetTeamColor();
 
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 TeamNum;
 	
 
 };

@@ -148,17 +148,19 @@ void ABaseFlag::OnReachDest()
 	{
 		Detach();
 
+		ABaseCharacter* Player = Cast<ABaseCharacter>(GetOwner());
 		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
+		ABasePlayerState* PS = Cast<ABasePlayerState>(Player->GetPlayerState());
 
 		if (GM)
 		{
-			if (TeamNum == RED_TEAM)
+			if (TeamNum == PS->TeamColor)
 			{
-				GM->FlagCapture(BLUE_TEAM);
+				GM->FlagCapture(2);
 			}
 			else
 			{
-				GM->FlagCapture(RED_TEAM);
+				GM->FlagCapture(1);
 			}
 		}
 	}

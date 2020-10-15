@@ -35,6 +35,7 @@ ABaseCharacter::ABaseCharacter()
 
 	WeaponAttachSocketName = "WeaponSocket";
 
+	
 
 	GetCapsuleComponent()-> SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
@@ -54,6 +55,13 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
+	if (PS != nullptr)
+	{
+		TeamNum = PS->TeamColor;
+
+	}
 	
 
 	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
@@ -137,15 +145,7 @@ void ABaseCharacter::ReloadGun()
 	}
 }
 
-void ABaseCharacter::SetPlayerSkin()
-{
-	// This will set the type of material (Color) of the player pawn
-	ABasePlayerState* MyPlayerState = Cast<ABasePlayerState>(GetPlayerState());
-	if (MyPlayerState)
-	{
-		TeamNum = MyPlayerState->TeamNum;
-	}
-}
+
 
 void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
@@ -196,11 +196,6 @@ float ABaseCharacter::GetArmor()
 	return PlayerHealthComp->Armor;
 }
 
-int32 ABaseCharacter::GetTeamColor()
-{
-	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
-	return PS->TeamColor;
 
-}
 
 

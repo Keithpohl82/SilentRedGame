@@ -28,8 +28,7 @@ public:
 
 	ABasePlayerState();
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 TeamNum;
+
 
 	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
 	int PlayerPing;

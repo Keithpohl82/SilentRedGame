@@ -34,7 +34,7 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 				ABasePlayerState* OtherPS = Cast<ABasePlayerState>(It);
 				if (OtherPS)
 				{
-					if (OtherPS->TeamColor == 1)
+					if (OtherPS->TeamColor <= 1)
 					{
 						NumBlueTeam++;
 					}
@@ -45,7 +45,7 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 				}
 
 			}
-			if (NumRedTeam > NumBlueTeam)
+			if (NumRedTeam < NumBlueTeam)
 			{
 				PS->TeamColor = 2;
 			}
