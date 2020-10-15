@@ -43,6 +43,9 @@ protected:
 public:
 	
 
+	int32 RedTeam = 1;
+	int32 BlueTeam = 2;
+
 	int32 TeamColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = Sounds)

@@ -28,7 +28,7 @@ public:
 
 	ABasePlayerState();
 
-
+	void SetTeamNum(int32 NewTeamNumber);
 
 	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
 	int PlayerPing;

@@ -29,29 +29,16 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 		{
 			uint8 NumRedTeam = 0;
 			uint8 NumBlueTeam = 0;
-			for (APlayerState* It : GameState->PlayerArray)
+			
+			if (NumRedTeam <= NumBlueTeam)
 			{
-				ABasePlayerState* OtherPS = Cast<ABasePlayerState>(It);
-				if (OtherPS)
-				{
-					if (OtherPS->TeamColor <= 1)
-					{
-						NumBlueTeam++;
-					}
-					else
-					{
-						NumRedTeam++;
-					}
-				}
-
-			}
-			if (NumRedTeam < NumBlueTeam)
-			{
-				PS->TeamColor = 2;
+				PS->SetTeamNum(RedTeam);
+				NumRedTeam++;
 			}
 			else
 			{
-				PS->TeamColor = 1;
+				PS->SetTeamNum(BlueTeam);
+				NumBlueTeam++;
 			}
 
 		}
@@ -66,14 +53,14 @@ void AMasterGameMode::FlagCapture(uint8 TeamThatCapturedIt)
 	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
 	if (ThisGameState)
 	{
-		if (TeamThatCapturedIt == 1)
+		if (TeamThatCapturedIt == RedTeam)
 		{
 			ACTF_CapturePoint* Loc = Cast<ACTF_CapturePoint>(GetWorld());
 
 			ThisGameState->RedPoints++;
 			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), CaptureSound, FVector::ZeroVector);
 		}
-		else if (TeamThatCapturedIt == 2)
+		else if (TeamThatCapturedIt == BlueTeam)
 		{
 			ThisGameState->BluePoints++;
 			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), CaptureSound, FVector::ZeroVector);

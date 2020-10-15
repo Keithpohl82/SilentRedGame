@@ -26,6 +26,11 @@ ABasePlayerState::ABasePlayerState()
 
 
 
+void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
+{
+	TeamColor = NewTeamNumber;
+}
+
 void ABasePlayerState::ShotFired()
 {
 	NumShotsFired += 1;
