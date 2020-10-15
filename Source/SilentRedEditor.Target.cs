@@ -10,5 +10,7 @@ public class SilentRedEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "SilentRed" } );
+
+	
 	}
 }

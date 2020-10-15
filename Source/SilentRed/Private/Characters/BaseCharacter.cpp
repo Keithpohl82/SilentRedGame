@@ -2,14 +2,19 @@
 
 
 #include "SilentRed/Public/Characters/BaseCharacter.h"
+#include "SilentRed/Public/Core/BasePlayerState.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "DrawDebugHelpers.h"
-#include "SilentRed/Public/Weapons/BaseProjectile.h"
 #include "GameFramework/Actor.h"
+#include "SilentRed/Public/Weapons/BaseWeapon.h"
+#include"SilentRed/SilentRed.h"
+#include "SilentRed/Public/Components/HealthComponent.h"
+
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -18,34 +23,30 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-	CameraComp->SetupAttachment(GetCapsuleComponent());
+	CameraComp->SetupAttachment(GetMesh());
 	CameraComp->bUsePawnControlRotation = true;
 
-	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PawnMesh1P"));
-	Mesh1P->SetupAttachment(CameraComp);
-	Mesh1P->bOnlyOwnerSee = true;
-	Mesh1P->bOwnerNoSee = false;
-	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->bReceivesDecals = false;
-	Mesh1P->SetCollisionObjectType(ECC_Pawn);
-	Mesh1P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Mesh1P->SetCollisionResponseToAllChannels(ECR_Ignore);
-
-
-	GetMesh()->bOnlyOwnerSee = false;
-	GetMesh()->bOwnerNoSee = true;
 	GetMesh()->bReceivesDecals = false;
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
-	
+
+	WeaponAttachSocketName = "WeaponSocket";
+
+
+	GetCapsuleComponent()-> SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
+
+	PlayerHealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+}
+
+void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseCharacter, CurrentWeapon);
+	DOREPLIFETIME(ABaseCharacter, PlayerSkins);
 
 }
 
@@ -54,6 +55,40 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
+
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		CurrentWeapon = GetWorld()->SpawnActor<ABaseWeapon>(StarterWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		if (CurrentWeapon)
+		{
+			CurrentWeapon->SetOwner(this);
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
+		}
+	}
+}
+
+// Called every frame
+void ABaseCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	UWorld* World = GetWorld();
+
+	
+}
+
+FVector ABaseCharacter::GetPawnViewLocation() const
+{
+	if (CameraComp)
+	{
+		return CameraComp->GetComponentLocation();
+	}
+	return Super::GetPawnViewLocation();
 }
 
 void ABaseCharacter::MoveForward(float value)
@@ -68,7 +103,7 @@ void ABaseCharacter::MoveRight(float value)
 
 void ABaseCharacter::BeginCrouch()
 {
-Crouch();
+	Crouch();
 }
 
 void ABaseCharacter::EndCrouch()
@@ -76,51 +111,57 @@ void ABaseCharacter::EndCrouch()
 	UnCrouch();
 }
 
-void ABaseCharacter::Dive()
-{
-	
-	bool bLoop = false;
-	GetMesh()->PlayAnimation(DiveAnim, bLoop);
-}
 
-void ABaseCharacter::Fire()
+
+void ABaseCharacter::StartFire()
 {
-	// Attempt to fire a projectile.
-	if (ProjectileClass)
+	if (CurrentWeapon)
 	{
-		// Get the camera transform.
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-		// Transform MuzzleOffset from camera space to world space.
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-		FRotator MuzzleRotation = CameraRotation;
-		// Skew the aim to be slightly upwards.
-		MuzzleRotation.Pitch += 10.0f;
-		UWorld* World = GetWorld();
-		if (World)
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = this;
-			// Spawn the projectile at the muzzle.
-			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-			if (Projectile)
-			{
-				// Set the projectile's initial trajectory.
-				FVector LaunchDirection = MuzzleRotation.Vector();
-				Projectile->FireInDirection(LaunchDirection);
-			}
-		}
+		CurrentWeapon->StartFire();
 	}
 }
 
-// Called every frame
-void ABaseCharacter::Tick(float DeltaTime)
+void ABaseCharacter::StopFire()
 {
-	Super::Tick(DeltaTime);
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFire();
+	}
+}
 
+void ABaseCharacter::ReloadGun()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->ReloadWeapon();
+	}
+}
+
+void ABaseCharacter::SetPlayerSkin()
+{
+	// This will set the type of material (Color) of the player pawn
+	ABasePlayerState* MyPlayerState = Cast<ABasePlayerState>(GetPlayerState());
+	if (MyPlayerState)
+	{
+		TeamNum = MyPlayerState->TeamNum;
+	}
+}
+
+void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Health <= 0.0f && !bDied)
+	{
+		bDied = true;
+
+		GetMovementComponent()->StopMovementImmediately();
+
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		DetachFromControllerPendingDestroy();
+
+		SetLifeSpan(5.0f);
+
+	}
 }
 
 // Called to bind functionality to input
@@ -139,8 +180,27 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 
-	PlayerInputComponent->BindAction(TEXT("Dive"), IE_Pressed, this, &ABaseCharacter::Dive);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ABaseCharacter::StartFire);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Released, this, &ABaseCharacter::StopFire);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
+	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &ABaseCharacter::ReloadGun);
 }
+
+float ABaseCharacter::GetHealth()
+{
+	return PlayerHealthComp->Health;
+}
+
+float ABaseCharacter::GetArmor()
+{
+	return PlayerHealthComp->Armor;
+}
+
+int32 ABaseCharacter::GetTeamColor()
+{
+	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
+	return PS->TeamColor;
+
+}
+
 

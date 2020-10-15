@@ -16,4 +16,15 @@ class SILENTRED_API AMasterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+
+	UFUNCTION(BlueprintCallable, Category = Replays)
+	void RestartRecording();
+
+public:
+
+	UPROPERTY(Replicated)
+	int32 TeamNum = 0;
+
+
+
 };

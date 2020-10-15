@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UDamageType;
 
 UCLASS()
 class SILENTRED_API ABaseProjectile : public AActor
@@ -26,6 +27,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponConfig)
+	TSubclassOf<UDamageType> DamageType;
+
 	// Sphere collision component.
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	USphereComponent* CollisionComponent;
@@ -41,4 +45,6 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor);
+	
 };

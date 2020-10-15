@@ -11,6 +11,9 @@
 //Elapsed time of the match.
 
 
+class ABaseCharacter;
+
+
 /**
  * 
  */
@@ -19,4 +22,41 @@ class SILENTRED_API AMasterGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
+		AMasterGameState();
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetBluePoints();
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetRedPoints();
+
+
+
+	virtual void BeginPlay() override;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 RedPoints;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 BluePoints;
+
+	FTimerHandle TimerHandle_GameTimer;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Time")
+	int32 GameSeconds;
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Time")
+	int32 GameMinutes;
+
+	void SetTimerSeconds();
+
+	void SetTimerMinuets();
+
+
+	void SetGameTime();
+
+	float GetGameSeconds();
+
+	float GetGameMinuets();
 };

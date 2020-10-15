@@ -13,6 +13,8 @@
 //Player Unique ID (if any)
 
 
+
+
 /**
  * 
  */
@@ -20,5 +22,55 @@ UCLASS()
 class SILENTRED_API ABasePlayerState : public APlayerState
 {
 	GENERATED_BODY()
+
+public:
+
+
+	ABasePlayerState();
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 TeamNum;
+
+	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
+	int PlayerPing;
+
+	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
+	int32 GamePlayerID;
+
+	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
+	FString PlayersName;
+
+	UPROPERTY(BlueprintReadOnly, Category = Weapon)
+	int32 NumShotsFired;
+
+
+protected:
+
+
+
+public:
 	
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int32 TeamColor;
+	
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	float PlayerScore;
+
+	/**Number of kills */
+	UPROPERTY(Transient, Replicated)
+	int32 NumKills;
+
+	/** number of deaths */
+	UPROPERTY(Transient, Replicated)
+	int32 NumDeaths;
+
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	float PlayerKDA;
+
+	
+
+	void ShotFired();
+
+
+
 };

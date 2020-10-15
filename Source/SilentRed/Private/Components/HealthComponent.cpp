@@ -2,15 +2,23 @@
 
 
 #include "SilentRed/Public/Components/HealthComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
+	DefaultHealth = 100;
+	DefaultArmor = 100;
+}
 
-	// ...
+
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UHealthComponent, Health);
+	DOREPLIFETIME(UHealthComponent, Armor);
 }
 
 
@@ -19,16 +27,44 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		AActor* MyOwner = GetOwner();
+		if (MyOwner)
+		{
+			MyOwner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::HandleTakeAnyDamage);
+		}
+	}
+	Health = DefaultHealth;
+	Armor = DefaultArmor;
 }
 
-
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (Damage <= 0.0f)
+	{
+		return;
+	}
 
-	// ...
+	ArmorDamage = ArmorDamageReduction * Damage;
+	
+	if (Armor > ArmorDamage)
+	{
+		Armor -= ArmorDamage;
+	}
+	else
+	{
+		Health -= Damage - Armor;
+		Armor = 0.0f;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Health Changed: %s, Armor Changed: %s"), *FString::SanitizeFloat(Health), *FString::SanitizeFloat(Armor));
+
+	OnHealthChanged.Broadcast(this, Health, Armor, Damage, DamageType, InstigatedBy, DamageCauser);
+}
+
+float UHealthComponent::GetHealthAmount()
+{
+	return Health / DefaultHealth;
 }
 

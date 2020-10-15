@@ -2,4 +2,50 @@
 
 
 #include "SilentRed/Public/Core/BasePlayerState.h"
+#include "Net/UnrealNetwork.h"
+#include "SilentRed/Public/Characters/BaseCharacter.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "SilentRed/Public/Core/MasterGameState.h"
+
+
+ABasePlayerState::ABasePlayerState()
+{
+	//SetReplicates(true);
+
+	PlayerPing = GetPing();
+	GamePlayerID = GetUniqueID();
+	PlayersName = GetPlayerName();
+	NumShotsFired = 0;
+	TeamColor = 0;
+
+}
+
+
+
+
+
+
+
+void ABasePlayerState::ShotFired()
+{
+	NumShotsFired += 1;
+}
+
+
+
+
+void ABasePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABasePlayerState, TeamColor);
+
+	DOREPLIFETIME(ABasePlayerState, PlayerScore);
+
+	DOREPLIFETIME(ABasePlayerState, NumKills);
+
+	DOREPLIFETIME(ABasePlayerState, NumDeaths);
+
+	DOREPLIFETIME(ABasePlayerState, PlayerKDA);
+}
 

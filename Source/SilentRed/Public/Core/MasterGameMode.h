@@ -15,9 +15,40 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(config=Game)
 class SILENTRED_API AMasterGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+
+
+protected:
+
+	UPROPERTY(Config)
+	int32 MaxPlayers;
+	
+	UPROPERTY(Config)
+	int32 WarmupTime;
+
+	//in Seconds 
+	UPROPERTY(Config)
+	int32 RoundTime;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	int32 KillScore;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	int32 DeathScore;
+
+public:
+	
+
+	int32 TeamColor;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sounds)
+	class USoundBase* CaptureSound;
+
+	void FlagCapture(uint8 TeamThatCapturedIt);
+
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

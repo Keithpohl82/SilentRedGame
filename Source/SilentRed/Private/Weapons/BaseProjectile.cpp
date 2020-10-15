@@ -4,6 +4,9 @@
 #include "SilentRed/Public/Weapons/BaseProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+
 
 // Sets default values
 ABaseProjectile::ABaseProjectile()
@@ -61,9 +64,27 @@ void ABaseProjectile::FireInDirection(const FVector& ShootDirection)
 
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
+	AActor* MyOwner = GetOwner();
+	
+	FHitResult ProjectileHit;
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+
+	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector ShotDirection = EyeRotation.Vector();
+
+	UGameplayStatics::ApplyPointDamage(OtherActor, 10.0f, ShotDirection, ProjectileHit, MyOwner->GetInstigatorController(), this, DamageType);
+
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 	{
 		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
 	}
+}
+
+void ABaseProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	DrawDebugString(GetWorld(), FVector::ZeroVector, TEXT("Overlapped"), OtherActor, FColor::Red, 3.0);
 }
 
