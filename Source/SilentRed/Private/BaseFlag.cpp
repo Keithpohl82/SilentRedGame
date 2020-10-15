@@ -209,4 +209,5 @@ void ABaseFlag::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABaseFlag, TeamNum);
+	DOREPLIFETIME(ABaseFlag, Destination);
 }

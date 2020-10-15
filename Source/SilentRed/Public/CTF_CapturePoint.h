@@ -40,10 +40,10 @@ protected:
 
 
 	UPROPERTY(Replicated)
-		ABaseFlag* FlagInstance;
+	ABaseFlag* FlagInstance;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = "Flag")
-		int32 TeamNum;
+	int32 TeamNum;
 
 	void GiveFlag(ABaseCharacter* Target);
 

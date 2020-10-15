@@ -46,7 +46,7 @@ protected:
 
 
 	UPROPERTY(Replicated)
-		ACTF_CapturePoint* Destination;//object which shows where the destination is
+	ACTF_CapturePoint* Destination;//object which shows where the destination is
 
 	void OnReachDest();//function that handles the event when destination is reached
 
