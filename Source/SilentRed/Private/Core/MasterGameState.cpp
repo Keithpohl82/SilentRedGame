@@ -7,11 +7,11 @@
 
 AMasterGameState::AMasterGameState()
 {
-	
+	NumBluePlayers = 0;
+	NumRedPlayers = 0;
+	BluePoints = 0;
+	RedPoints = 0;
 }
-
-
-
 
 
 int32 AMasterGameState::GetBluePoints()
@@ -75,5 +75,7 @@ void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(AMasterGameState, GameSeconds);
 
+	DOREPLIFETIME(AMasterGameState, NumRedPlayers);
 
+	DOREPLIFETIME(AMasterGameState, NumBluePlayers);
 }

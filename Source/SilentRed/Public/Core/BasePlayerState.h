@@ -49,8 +49,8 @@ protected:
 
 public:
 	
-	UPROPERTY(Replicated, BlueprintReadWrite)
-	int32 TeamColor;
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 TeamNumber;
 	
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	float PlayerScore;

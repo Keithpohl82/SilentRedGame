@@ -22,6 +22,7 @@ class SILENTRED_API AMasterGameMode : public AGameModeBase
 	
 
 
+
 protected:
 
 	UPROPERTY(Config)
@@ -40,6 +41,9 @@ protected:
 	UPROPERTY(Config, EditDefaultsOnly)
 	int32 DeathScore;
 
+	UPROPERTY(Config)
+	int32 NumberOfTeams;
+
 public:
 	
 
@@ -51,7 +55,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Sounds)
 	class USoundBase* CaptureSound;
 
-	void FlagCapture(uint8 TeamThatCapturedIt);
+	void FlagCapture(int32 TeamThatCapturedIt);
 
 	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

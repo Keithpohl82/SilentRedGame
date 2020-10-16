@@ -14,6 +14,7 @@
 #include "SilentRed/Public/Core/MasterGameMode.h"
 #include "SilentRed/Public/Core/MasterGameState.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "SilentRed/SilentRed.h"
 
@@ -144,17 +145,21 @@ bool ABaseFlag::ServerBeginPlay_Validate()
 
 void ABaseFlag::OnReachDest()
 {
+
+		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(GetOwner());
+		ABasePlayerState* PlayerState = Cast<ABasePlayerState>(PlayerCharacter->GetPlayerState());
+		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
+
+
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		Detach();
-
-		ABaseCharacter* Player = Cast<ABaseCharacter>(GetOwner());
-		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
-		ABasePlayerState* PS = Cast<ABasePlayerState>(Player->GetPlayerState());
+		
+		
 
 		if (GM)
 		{
-			if (TeamNum == PS->TeamColor)
+			if (TeamNum == 1)
 			{
 				GM->FlagCapture(2);
 			}
@@ -170,6 +175,10 @@ void ABaseFlag::OnReachDest()
 void ABaseFlag::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+
+	// int32 PlayersHealth = FlagOwner->GetHealth();
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
@@ -189,12 +198,14 @@ void ABaseFlag::Tick(float DeltaTime)
 					FColor(255, 0, 0)
 				);
 			}
+				
 			UHealthComponent* OwnerHealth = Cast<UHealthComponent>(FlagOwner->GetComponentByClass(UHealthComponent::StaticClass()));
 			if (ensure(OwnerHealth))
 			{
-				if (OwnerHealth->GetHealthAmount() == 0)
+				if (OwnerHealth->GetHealthAmount() <= 0)
 				{
 					Detach();
+
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("no health"));
 
 				}

@@ -17,7 +17,7 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 
 	ABasePlayerState* PlayerState = NewPlayer->GetPlayerState<ABasePlayerState>();
-	AMasterGameState* MyGameState = GetGameState<AMasterGameState>();
+	AMasterGameState* GState = GetGameState<AMasterGameState>();
 	APawn* PlayerPawn = NewPlayer->GetPawn();
 	ABaseCharacter* PlayerChar = Cast<ABaseCharacter>(NewPlayer);
 	AMasterPlayerController* Controller = Cast<AMasterPlayerController>(NewPlayer);
@@ -25,20 +25,19 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 	if (NewPlayer)
 	{
 		ABasePlayerState* PS = Cast<ABasePlayerState>(NewPlayer->PlayerState);
-		if (PS && GameState)
+		if (PS && GState)
 		{
-			uint8 NumRedTeam = 0;
-			uint8 NumBlueTeam = 0;
+
 			
-			if (NumRedTeam <= NumBlueTeam)
+			if (GState->NumRedPlayers <= GState->NumBluePlayers)
 			{
 				PS->SetTeamNum(RedTeam);
-				NumRedTeam++;
+				GState->NumRedPlayers++;
 			}
 			else
 			{
 				PS->SetTeamNum(BlueTeam);
-				NumBlueTeam++;
+				GState->NumBluePlayers++;
 			}
 
 		}
@@ -48,7 +47,7 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 }
 
 
-void AMasterGameMode::FlagCapture(uint8 TeamThatCapturedIt)
+void AMasterGameMode::FlagCapture(int32 TeamThatCapturedIt)
 {
 	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
 	if (ThisGameState)

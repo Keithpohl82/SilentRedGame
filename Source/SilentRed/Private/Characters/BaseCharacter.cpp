@@ -59,7 +59,7 @@ void ABaseCharacter::BeginPlay()
 	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
 	if (PS != nullptr)
 	{
-		TeamNum = PS->TeamColor;
+		TeamNum = PS->TeamNumber;
 
 	}
 	

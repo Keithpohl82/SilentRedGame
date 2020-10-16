@@ -16,7 +16,7 @@ ABasePlayerState::ABasePlayerState()
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();
 	NumShotsFired = 0;
-	TeamColor = 0;
+	TeamNumber = 0;
 
 }
 
@@ -28,7 +28,7 @@ ABasePlayerState::ABasePlayerState()
 
 void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
 {
-	TeamColor = NewTeamNumber;
+	TeamNumber = NewTeamNumber;
 }
 
 void ABasePlayerState::ShotFired()
@@ -43,7 +43,7 @@ void ABasePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ABasePlayerState, TeamColor);
+	DOREPLIFETIME(ABasePlayerState, TeamNumber);
 
 	DOREPLIFETIME(ABasePlayerState, PlayerScore);
 
