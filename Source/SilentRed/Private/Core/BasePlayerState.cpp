@@ -8,23 +8,17 @@
 #include "SilentRed/Public/Core/MasterGameState.h"
 
 
-ABasePlayerState::ABasePlayerState()
+ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer)
 {
-	//SetReplicates(true);
+	SetReplicates(true);
 
 	PlayerPing = GetPing();
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();
 	NumShotsFired = 0;
-	TeamNumber = 0;
+	//TeamNumber = 0;
 
 }
-
-
-
-
-
-
 
 void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
 {

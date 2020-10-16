@@ -26,7 +26,7 @@ class SILENTRED_API AMasterGameMode : public AGameModeBase
 protected:
 
 	UPROPERTY(Config)
-	int32 MaxPlayers;
+	int8 MaxPlayers;
 	
 	UPROPERTY(Config)
 	int32 WarmupTime;
@@ -42,15 +42,15 @@ protected:
 	int32 DeathScore;
 
 	UPROPERTY(Config)
-	int32 NumberOfTeams;
+	int8 NumberOfTeams;
 
 public:
 	
 
-	int32 RedTeam = 1;
-	int32 BlueTeam = 2;
+	int8 RedTeam = 1;
+	int8 BlueTeam = 2;
 
-	int32 TeamColor;
+	int8 TeamColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = Sounds)
 	class USoundBase* CaptureSound;

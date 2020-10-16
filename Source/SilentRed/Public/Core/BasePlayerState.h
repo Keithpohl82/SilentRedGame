@@ -26,7 +26,7 @@ class SILENTRED_API ABasePlayerState : public APlayerState
 public:
 
 
-	ABasePlayerState();
+	ABasePlayerState(const FObjectInitializer& ObjectInitializer);
 
 	void SetTeamNum(int32 NewTeamNumber);
 

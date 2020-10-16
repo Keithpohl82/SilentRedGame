@@ -35,9 +35,9 @@ public:
 
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 NumRedPlayers;
+		int32 NumRedPlayers;
 	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 NumBluePlayers;
+		int32 NumBluePlayers;
 
 
 	virtual void BeginPlay() override;
