@@ -28,7 +28,7 @@ public:
 
 	ABasePlayerState(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetTeamNum(int32 NewTeamNumber);
 
 	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
