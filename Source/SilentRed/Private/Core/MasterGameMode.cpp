@@ -10,6 +10,12 @@
 #include "SilentRed/SilentRed.h"
 #include "Kismet/GameplayStatics.h"
 
+AMasterGameMode::AMasterGameMode()
+{
+	RedTeam = 1;
+	BlueTeam = 2;
+}
+
 
 
 void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
@@ -22,7 +28,7 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 	ABaseCharacter* PlayerChar = Cast<ABaseCharacter>(NewPlayer);
 	AMasterPlayerController* Controller = Cast<AMasterPlayerController>(NewPlayer);
 
-	if (NewPlayer)
+	/*if (NewPlayer)
 	{
 		ABasePlayerState* PS = Cast<ABasePlayerState>(NewPlayer->PlayerState);
 		if (PS && GState)
@@ -42,10 +48,35 @@ void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 
 		}
 
-	}
+	}*/
 	
 }
 
+
+FString AMasterGameMode::InitNewPlayer(class APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal /*= TEXT("")*/)
+{
+	FString Result = Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
+
+	ABasePlayerState* NewPlayerState = Cast<ABasePlayerState>(NewPlayerController->PlayerState);
+	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
+
+	if (NewPlayerState )
+	{
+		if (ThisGameState->NumRedPlayers <= ThisGameState->NumBluePlayers)
+		{
+			
+			NewPlayerState->SetTeamNum(1);
+			ThisGameState->NumRedPlayers++;
+		}
+		else 
+		{
+			NewPlayerState->SetTeamNum(2);
+			ThisGameState->NumBluePlayers++;
+		}
+	} 
+	
+	return Result;
+}
 
 void AMasterGameMode::FlagCapture(int32 TeamThatCapturedIt)
 {

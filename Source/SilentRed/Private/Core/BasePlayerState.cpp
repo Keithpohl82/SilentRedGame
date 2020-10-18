@@ -10,13 +10,13 @@
 
 ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer)
 {
-	SetReplicates(true);
+	
 
 	PlayerPing = GetPing();
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();
 	NumShotsFired = 0;
-	//TeamNumber = 0;
+
 
 }
 

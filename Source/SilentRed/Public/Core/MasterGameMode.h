@@ -21,7 +21,7 @@ class SILENTRED_API AMasterGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 
-
+	AMasterGameMode();
 
 protected:
 
@@ -44,11 +44,14 @@ protected:
 	UPROPERTY(Config)
 	int8 NumberOfTeams;
 
+	/* Called once on every new player that enters the gamemode */
+	virtual FString InitNewPlayer(class APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
+
 public:
 	
 
-	int8 RedTeam = 1;
-	int8 BlueTeam = 2;
+	int8 RedTeam;
+	int8 BlueTeam;
 
 	int8 TeamColor;
 

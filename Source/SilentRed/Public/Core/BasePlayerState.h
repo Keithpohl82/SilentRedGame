@@ -28,6 +28,7 @@ public:
 
 	ABasePlayerState(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION()
 	void SetTeamNum(int32 NewTeamNumber);
 
 	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
@@ -49,7 +50,7 @@ protected:
 
 public:
 	
-	UPROPERTY(Replicated, BlueprintReadOnly)
+	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
 	int32 TeamNumber;
 	
 	UPROPERTY(BlueprintReadWrite, Replicated)
