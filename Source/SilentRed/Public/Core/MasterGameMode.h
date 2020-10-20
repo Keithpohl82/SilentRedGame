@@ -12,6 +12,8 @@
 // How are the points achieved ? Killing someone ? Stealing a flag ?
 //What Characters will be used ? What weapons are allowed ? Only pistols ?
 
+
+class ABasePlayerState;
 /**
  * 
  */
@@ -21,9 +23,12 @@ class SILENTRED_API AMasterGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 
-	AMasterGameMode();
+
+
+
 
 protected:
+
 
 	UPROPERTY(Config)
 	int8 MaxPlayers;
@@ -42,7 +47,7 @@ protected:
 	int32 DeathScore;
 
 	UPROPERTY(Config)
-	int8 NumberOfTeams;
+	int32 NumberOfTeams;
 
 	/* Called once on every new player that enters the gamemode */
 	virtual FString InitNewPlayer(class APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;

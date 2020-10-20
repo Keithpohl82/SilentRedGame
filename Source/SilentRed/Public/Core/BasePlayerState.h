@@ -31,6 +31,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTeamNum(int32 NewTeamNumber);
 
+	UFUNCTION()
+	void OnRep_SetTeam(int32 NewNumber);
+
+	void SetTeamSkin();
+
 	UPROPERTY(BlueprintReadWrite, Category = PlayerInfo)
 	int PlayerPing;
 
@@ -50,7 +55,7 @@ protected:
 
 public:
 	
-	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_SetTeam, BlueprintReadOnly)
 	int32 TeamNumber;
 	
 	UPROPERTY(BlueprintReadWrite, Replicated)
@@ -67,7 +72,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	float PlayerKDA;
 
-	
+	UFUNCTION()
+	int32 GetTeamNumber() const;
 
 	void ShotFired();
 

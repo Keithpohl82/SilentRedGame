@@ -35,10 +35,12 @@ public:
 
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		int32 NumRedPlayers;
+	int32 NumRedPlayers;
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		int32 NumBluePlayers;
+	int32 NumBluePlayers;
 
+	UPROPERTY(Replicated, Transient)
+	int32 NumTeams;
 
 	virtual void BeginPlay() override;
 

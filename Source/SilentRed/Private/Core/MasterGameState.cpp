@@ -7,6 +7,8 @@
 
 AMasterGameState::AMasterGameState()
 {
+	
+	NumTeams = 0;
 	NumBluePlayers = 0;
 	NumRedPlayers = 0;
 	BluePoints = 0;
@@ -66,6 +68,8 @@ float AMasterGameState::GetGameMinuets()
 void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMasterGameState, NumTeams);
 
 	DOREPLIFETIME(AMasterGameState, RedPoints);
 

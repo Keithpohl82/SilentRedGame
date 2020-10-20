@@ -25,6 +25,6 @@ public:
 	UPROPERTY(Replicated)
 	int32 TeamNum = 0;
 
-
+	
 
 };

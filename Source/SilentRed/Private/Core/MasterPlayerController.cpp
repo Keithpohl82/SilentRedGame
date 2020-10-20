@@ -18,6 +18,8 @@ void AMasterPlayerController::RestartRecording()
 }
 
 
+
+
 void AMasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

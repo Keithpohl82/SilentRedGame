@@ -22,7 +22,26 @@ ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer)
 
 void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
 {
-	TeamNumber = NewTeamNumber;
+	if (TeamNumber == 0)
+	{
+		TeamNumber = NewTeamNumber;
+	}
+}
+
+void ABasePlayerState::OnRep_SetTeam(int32 NewNumber)
+{
+	SetTeamNum(TeamNumber);
+}
+
+void ABasePlayerState::SetTeamSkin()
+{
+	ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner());
+	
+}
+
+int32 ABasePlayerState::GetTeamNumber() const
+{
+	return TeamNumber;
 }
 
 void ABasePlayerState::ShotFired()
