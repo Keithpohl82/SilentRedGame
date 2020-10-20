@@ -5,7 +5,7 @@
 #include "Net/UnrealNetwork.h"
 
 
-AMasterGameState::AMasterGameState()
+AMasterGameState::AMasterGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	
 	NumTeams = 0;
@@ -70,6 +70,8 @@ void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMasterGameState, NumTeams);
+
+	DOREPLIFETIME(AMasterGameState, TeamScores);
 
 	DOREPLIFETIME(AMasterGameState, RedPoints);
 

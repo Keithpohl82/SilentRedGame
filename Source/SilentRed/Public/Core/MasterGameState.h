@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "MasterGameState.generated.h"
 
 //REPLICATED TO ALL CLIENTS.
@@ -18,11 +18,11 @@ class ABaseCharacter;
  * 
  */
 UCLASS()
-class SILENTRED_API AMasterGameState : public AGameStateBase
+class AMasterGameState : public AGameState
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 	
-		AMasterGameState();
+		
 
 public:
 
@@ -32,7 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetRedPoints();
 
-
+	/** accumulated score per team */
+	UPROPERTY(Transient, Replicated)
+	TArray<int32> TeamScores;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	int32 NumRedPlayers;

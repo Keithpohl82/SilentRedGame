@@ -55,7 +55,7 @@ protected:
 
 public:
 	
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_SetTeam, BlueprintReadOnly)
+	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
 	int32 TeamNumber;
 	
 	UPROPERTY(BlueprintReadWrite, Replicated)

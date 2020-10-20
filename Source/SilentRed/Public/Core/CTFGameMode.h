@@ -9,9 +9,45 @@
 /**
  * 
  */
-UCLASS()
-class SILENTRED_API ACTFGameMode : public AMasterGameMode
+UCLASS(Config=Game)
+class ACTFGameMode : public AMasterGameMode
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
+
+	/** setup team changes at player login */
+	void PostLogin(APlayerController* NewPlayer) override;
+
+	/** initialize replicated game data */
+	virtual void InitGameState() override;
+
+
+
+protected:
+
+	/** number of teams */
+	int32 NumTeams;
+
+	/** best team */
+	int32 WinnerTeam;
+
+	/** pick team with least players in or random when it's equal */
+	int32 ChooseTeam(ABasePlayerState* ForPlayerState) const;
+
+	/** check who won */
+	virtual void DetermineMatchWinner() override;
+
+	/** check if PlayerState is a winner */
+	virtual bool IsWinner(ABasePlayerState* PlayerState) const override;
+
+	/** check team constraints */
+	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
 	
+
+public:
+
+	int8 RedTeam;
+	int8 BlueTeam;
+	
+	void FlagCapture(int32 TeamThatCapturedIt);
+
 };

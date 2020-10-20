@@ -11,6 +11,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
+#include "SilentRed/Public/Core/CTFGameMode.h"
 #include "SilentRed/Public/Core/MasterGameMode.h"
 #include "SilentRed/Public/Core/MasterGameState.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
@@ -148,7 +149,7 @@ void ABaseFlag::OnReachDest()
 
 		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(GetOwner());
 		ABasePlayerState* PlayerState = Cast<ABasePlayerState>(PlayerCharacter->GetPlayerState());
-		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
+		ACTFGameMode* GM = Cast<ACTFGameMode>(GetWorld()->GetAuthGameMode());
 
 
 	if (GetLocalRole() == ROLE_Authority)
