@@ -34,6 +34,15 @@ public:
 	UPROPERTY(Transient, Replicated)
 	int32 BluePoints;
 
+	int32 RedTeam = 1;
+	int32 BlueTeam = 2;
+
+	UPROPERTY(Replicated)
+	int32 NumRedPlayers;
+
+	UPROPERTY(Replicated)
+	int32 NumBluePlayers;
+
 
 	/** number of teams in current game (doesn't deprecate when no players are left in a team) */
 	UPROPERTY(Transient, Replicated)

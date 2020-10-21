@@ -81,7 +81,12 @@ void AMasterGameMode::DefaultTimer()
 		{
 			StartMatch();
 		}
+
 		return;
+	}
+	 if (GetMatchState() == MatchState::WaitingToStart)
+	{
+		StartMatch();
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SilentRed/Public/GamePlay/TeamsPlayerStart.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
 
 ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -15,9 +16,9 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	DefaultPawnClass = PlayerPawnOb.Class;
 
 	NumTeams = 2;
-	bDelayedStart = true;
+	bDelayedStart = false;
 
-	RedTeam =1;
+	RedTeam = 1;
 	BlueTeam = 2;
 
 	
@@ -49,42 +50,26 @@ void ACTFGameMode::PostLogin(APlayerController* NewPlayer)
 
 int32 ACTFGameMode::ChooseTeam(ABasePlayerState* ForPlayerState) const
 {
-	TArray<int32> TeamBalance;
-	TeamBalance.AddZeroed(NumTeams);
+	int32 TeamNum;
+	
+	ABasePlayerState* PS = Cast<ABasePlayerState>(ForPlayerState);
+	AMasterGameState* GState = GetGameState<AMasterGameState>();
 
-	// get current team balance
-	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+
+	if (GState->NumRedPlayers <= GState->NumBluePlayers)
 	{
-		ABasePlayerState const* const TestPlayerState = Cast<ABasePlayerState>(GameState->PlayerArray[i]);
-		if (TestPlayerState && TestPlayerState != ForPlayerState && TeamBalance.IsValidIndex(TestPlayerState->GetTeamNumber()))
-		{
-			TeamBalance[TestPlayerState->GetTeamNumber()]++;
-		}
+		GState->NumRedPlayers++;
+		return TeamNum = RedTeam;
+		//PS->SetTeamNum(RedTeam);
+	}
+	else
+	{
+		GState->NumBluePlayers++;
+		return TeamNum = BlueTeam;
+		//PS->SetTeamNum(BlueTeam);
 	}
 
-	// find least populated one
-	int32 BestTeamScore = TeamBalance[0];
-	for (int32 i = 1; i < TeamBalance.Num(); i++)
-	{
-		if (BestTeamScore > TeamBalance[i])
-		{
-			BestTeamScore = TeamBalance[i];
-		}
-	}
-
-	// there could be more than one...
-	TArray<int32> BestTeams;
-	for (int32 i = 0; i < TeamBalance.Num(); i++)
-	{
-		if (TeamBalance[i] == BestTeamScore)
-		{
-			BestTeams.Add(i);
-		}
-	}
-
-	// get random from best list
-	const int32 RandomBestTeam = BestTeams[FMath::RandHelper(BestTeams.Num())];
-	return RandomBestTeam;
+	
 }
 
 void ACTFGameMode::DetermineMatchWinner()

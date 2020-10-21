@@ -26,7 +26,8 @@ void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AMasterGameState, RemainingTime);
 	DOREPLIFETIME(AMasterGameState, TeamScores);
 	DOREPLIFETIME(AMasterGameState, bTimerPaused);
-	
+	DOREPLIFETIME(AMasterGameState, NumRedPlayers);
+	DOREPLIFETIME(AMasterGameState, NumBluePlayers);
 }
 
 
