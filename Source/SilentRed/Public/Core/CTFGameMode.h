@@ -24,7 +24,7 @@ class ACTFGameMode : public AMasterGameMode
 
 protected:
 
-	/** number of teams */
+	UPROPERTY(Config)
 	int32 NumTeams;
 
 	/** best team */

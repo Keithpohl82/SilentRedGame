@@ -17,19 +17,11 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	NumTeams = 2;
 	bDelayedStart = true;
 
+	RedTeam =1;
+	BlueTeam = 2;
+
 	
 
-}
-
-
-void ACTFGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	// Place player on a team before Super (VoIP team based init, findplayerstart, etc)
-	ABasePlayerState* NewPlayerState = CastChecked<ABasePlayerState>(NewPlayer->PlayerState);
-	const int32 TeamNum = ChooseTeam(NewPlayerState);
-	NewPlayerState->SetTeamNum(TeamNum);
-
-	Super::PostLogin(NewPlayer);
 }
 
 void ACTFGameMode::InitGameState()
@@ -42,6 +34,18 @@ void ACTFGameMode::InitGameState()
 		MyGameState->NumTeams = NumTeams;
 	}
 }
+
+void ACTFGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	// Place player on a team before Super (VoIP team based init, findplayerstart, etc)
+	ABasePlayerState* NewPlayerState = CastChecked<ABasePlayerState>(NewPlayer->PlayerState);
+	const int32 TeamNum = ChooseTeam(NewPlayerState);
+	NewPlayerState->SetTeamNum(TeamNum);
+
+	Super::PostLogin(NewPlayer);
+}
+
+
 
 int32 ACTFGameMode::ChooseTeam(ABasePlayerState* ForPlayerState) const
 {
