@@ -2,9 +2,27 @@
 
 
 #include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "Online.h"
+#include "Interfaces/OnlineEventsInterface.h"
 #include "Engine/World.h"
 #include "Engine/DemoNetDriver.h"
 #include "Net/UnrealNetwork.h"
+
+
+AMasterPlayerController::AMasterPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	bAllowGameActions = true;
+
+	bGameEndedFrame = false;
+
+	bHasSentStartEvents = false;
+}
+
+
+void AMasterPlayerController::HandleReturnToMainMenu()
+{
+	// nothing for now
+}
 
 void AMasterPlayerController::RestartRecording()
 {
@@ -19,6 +37,21 @@ void AMasterPlayerController::RestartRecording()
 
 
 
+
+void AMasterPlayerController::ClientGameStarted_Implementation()
+{
+	bAllowGameActions = true;
+
+	// Enable controls mode now the game has started
+	SetIgnoreMoveInput(false);
+
+	
+	bGameEndedFrame = false;
+
+			bHasSentStartEvents = true;
+		
+	
+}
 
 void AMasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

@@ -160,13 +160,13 @@ void ABaseFlag::OnReachDest()
 
 		if (GM)
 		{
-			if (TeamNum == 1)
+			if (TeamNum == 0)
 			{
-				GM->FlagCapture(2);
+				GM->FlagCapture(1);
 			}
 			else
 			{
-				GM->FlagCapture(1);
+				GM->FlagCapture(0);
 			}
 		}
 	}

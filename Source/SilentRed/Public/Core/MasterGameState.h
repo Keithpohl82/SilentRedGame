@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "GameFramework/GameState.h"
 #include "MasterGameState.generated.h"
 
@@ -12,6 +12,7 @@
 
 
 class ABaseCharacter;
+
 
 
 /**
@@ -26,47 +27,33 @@ class AMasterGameState : public AGameState
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetBluePoints();
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetRedPoints();
+	UPROPERTY(Transient, Replicated)
+	int32 RedPoints;
+
+	UPROPERTY(Transient, Replicated)
+	int32 BluePoints;
+
+
+	/** number of teams in current game (doesn't deprecate when no players are left in a team) */
+	UPROPERTY(Transient, Replicated)
+	int32 NumTeams;
 
 	/** accumulated score per team */
 	UPROPERTY(Transient, Replicated)
 	TArray<int32> TeamScores;
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 NumRedPlayers;
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 NumBluePlayers;
+	/** time left for warmup / match */
+	UPROPERTY(Transient, Replicated)
+	int32 RemainingTime;
 
-	UPROPERTY(Replicated, Transient)
-	int32 NumTeams;
+	/** is timer paused? */
+	UPROPERTY(Transient, Replicated)
+	bool bTimerPaused;
 
-	virtual void BeginPlay() override;
+	
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 RedPoints;
-
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	int32 BluePoints;
-
-	FTimerHandle TimerHandle_GameTimer;
-
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Time")
-	int32 GameSeconds;
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Time")
-	int32 GameMinutes;
-
-	void SetTimerSeconds();
-
-	void SetTimerMinuets();
+	void RequestFinishAndExitToMainMenu();
 
 
-	void SetGameTime();
-
-	float GetGameSeconds();
-
-	float GetGameMinuets();
 };

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "SilentRed/Public/Core/MasterGameState.h"
 #include "SilentRed/Public/Core/TDMGameMode.h"
+#include "SilentRed/Public/Core/MasterGameState.h"
+
 #include "SilentRed/Public/GamePlay/TeamsPlayerStart.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
 

@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "SilentRed/SilentRed.h"
 #include "Engine/GameInstance.h"
 #include "SilentRed/Public/MenuSystem/MainMenuInterface.h"
+
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Engine/NetworkDelegates.h"
 #include "BaseGameInstance.generated.h"
 
 
@@ -18,16 +20,19 @@ class UUserWidget;
 /**
  * 
  */
-UCLASS()
-class SILENTRED_API UBaseGameInstance : public UGameInstance, public IMainMenuInterface
+UCLASS(Config=Game)
+class UBaseGameInstance : public UGameInstance, public IMainMenuInterface
 {
+public:
 	GENERATED_BODY()
 	
-	
+	UBaseGameInstance(const FObjectInitializer& ObjectInitalizer);
 
 public:
 
-	UBaseGameInstance(const FObjectInitializer & ObjectInitalizer);
+	void RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer);
+
+	void RemoveSplitScreenPlayers();
 
 	virtual void Init();
 

@@ -2,86 +2,59 @@
 
 
 #include "SilentRed/Public/Core/MasterGameState.h"
+#include "SilentRed/Public/Core/MasterGameMode.h"
+#include "SilentRed/Public/Core/BaseGameInstance.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "SilentRed/Public/Core/BasePlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 
 AMasterGameState::AMasterGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	
 	NumTeams = 0;
-	NumBluePlayers = 0;
-	NumRedPlayers = 0;
-	BluePoints = 0;
-	RedPoints = 0;
+	RemainingTime = 0;
+	bTimerPaused = false;
 }
 
 
-int32 AMasterGameState::GetBluePoints()
-{
-	return BluePoints;
-}
-
-int32 AMasterGameState::GetRedPoints()
-{
-	return RedPoints;
-}
-
-void AMasterGameState::BeginPlay()
-{
-	Super::BeginPlay();
-	GameSeconds = 0;
-	GameMinutes = 20;
-	SetGameTime();
-}
-
-void AMasterGameState::SetTimerSeconds()
-{
-	GameSeconds--;
-
-	if (GameSeconds <= 0)
-	{
-		SetTimerMinuets();
-		GameSeconds = 59;
-	}
-}
-
-void AMasterGameState::SetTimerMinuets()
-{
-	GameMinutes--;
-}
-
-void AMasterGameState::SetGameTime()
-{
-	GetWorldTimerManager().SetTimer(TimerHandle_GameTimer, this, &AMasterGameState::SetTimerSeconds, 1.0f, true, 1.0f);
-}
-
-float AMasterGameState::GetGameSeconds()
-{
-	return GameSeconds;
-}
-
-float AMasterGameState::GetGameMinuets()
-{
-	return GameMinutes;
-}
 
 void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMasterGameState, NumTeams);
-
+	DOREPLIFETIME(AMasterGameState, RemainingTime);
 	DOREPLIFETIME(AMasterGameState, TeamScores);
+	DOREPLIFETIME(AMasterGameState, bTimerPaused);
+	
+}
 
-	DOREPLIFETIME(AMasterGameState, RedPoints);
 
-	DOREPLIFETIME(AMasterGameState, BluePoints);
 
-	DOREPLIFETIME(AMasterGameState, GameMinutes);
+void AMasterGameState::RequestFinishAndExitToMainMenu()
+{
+	if (AuthorityGameMode)
+	{
+		// we are server, tell the gamemode
+		AMasterGameMode* const GameMode = Cast<AMasterGameMode>(AuthorityGameMode);
+		if (GameMode)
+		{
+			GameMode->RequestFinishAndExitToMainMenu();
+		}
+	}
+	else
+	{
+		// we are client, handle our own business
+		UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+		if (GameInstance)
+		{
+			GameInstance->RemoveSplitScreenPlayers();
+		}
 
-	DOREPLIFETIME(AMasterGameState, GameSeconds);
-
-	DOREPLIFETIME(AMasterGameState, NumRedPlayers);
-
-	DOREPLIFETIME(AMasterGameState, NumBluePlayers);
+		AMasterPlayerController* const PrimaryPC = Cast<AMasterPlayerController>(GetGameInstance()->GetFirstLocalPlayerController());
+		if (PrimaryPC)
+		{
+			PrimaryPC->HandleReturnToMainMenu();
+		}
+	}
 }

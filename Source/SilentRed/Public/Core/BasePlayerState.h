@@ -72,7 +72,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	float PlayerKDA;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	int32 GetTeamNumber() const;
 
 	void ShotFired();

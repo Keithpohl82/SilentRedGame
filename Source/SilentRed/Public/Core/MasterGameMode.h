@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "GameFramework/GameMode.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
@@ -22,7 +22,7 @@ class FUniqueNetId;
  * 
  */
 UCLASS(config=Game)
-class SILENTRED_API AMasterGameMode : public AGameMode
+class AMasterGameMode : public AGameMode
 {
 	GENERATED_UCLASS_BODY()
 	
@@ -44,11 +44,26 @@ class SILENTRED_API AMasterGameMode : public AGameMode
 	/** Tries to spawn the player's pawn */
 	virtual void RestartPlayer(AController* NewPlayer) override;
 
-	/** select best spawn point for player */
+	/** called before startmatch */
+	virtual void HandleMatchIsWaitingToStart() override;
+
+	/** starts new match */
+	virtual void HandleMatchHasStarted() override;
+	
+	/** always pick new random spawn */
+	virtual bool ShouldSpawnAtStartSpot(AController* Player) override;
+
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+/** select best spawn point for player */
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
 
 protected:
 
+
+	UPROPERTY(config)
+	int32 TimeBetweenMatches;
 
 	UPROPERTY(Config)
 	int8 MaxPlayers;
@@ -69,8 +84,6 @@ protected:
 	UPROPERTY(Config)
 	int32 NumberOfTeams;
 
-	/* Called once on every new player that enters the gamemode */
-	virtual FString InitNewPlayer(class APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
 
 	/** Handle for efficient management of DefaultTimer timer */
 	FTimerHandle TimerHandle_DefaultTimer;
@@ -84,11 +97,19 @@ protected:
 	/** check if PlayerState is a winner */
 	virtual bool IsWinner(ABasePlayerState* PlayerState) const;
 
+	/** check if player should use spawnpoint */
+	virtual bool IsSpawnpointPreferred(APlayerStart* SpawnPoint, AController* Player) const;
 
 
 public:
 	
+	/** finish current match and lock players */
+	UFUNCTION(exec)
+	void FinishMatch();
 
+	/*Finishes the match and bumps everyone to main menu.*/
+	/*Only GameInstance should call this function */
+	void RequestFinishAndExitToMainMenu();
 	
 
 	int8 TeamColor;
@@ -97,5 +118,4 @@ public:
 	class USoundBase* CaptureSound;
 
 
-	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

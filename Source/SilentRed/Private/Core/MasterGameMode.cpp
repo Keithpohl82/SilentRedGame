@@ -12,6 +12,10 @@
 #include "SilentRed/Public/Characters/MasterSpectatorPawn.h"
 #include "SilentRed/SilentRed.h"
 #include "Kismet/GameplayStatics.h"
+#include "EngineUtils.h"
+#include "Engine/PlayerStartPIE.h"
+#include "Components/CapsuleComponent.h"
+
 
 
 AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -111,35 +115,100 @@ void AMasterGameMode::RestartPlayer(AController* NewPlayer)
 	Super::RestartPlayer(NewPlayer);
 }
 
-AActor* AMasterGameMode::ChoosePlayerStart_Implementation(AController* Player)
+void AMasterGameMode::HandleMatchIsWaitingToStart()
 {
-	
+	Super::HandleMatchIsWaitingToStart();
+
+	if (bDelayedStart)
+	{
+		// start warmup if needed
+		AMasterGameState* const MyGameState = Cast<AMasterGameState>(GameState);
+		if (MyGameState && MyGameState->RemainingTime == 0)
+		{
+			const bool bWantsMatchWarmup = !GetWorld()->IsPlayInEditor();
+			if (bWantsMatchWarmup && WarmupTime > 0)
+			{
+				MyGameState->RemainingTime = WarmupTime;
+			}
+			else
+			{
+				MyGameState->RemainingTime = 0.0f;
+			}
+		}
+	}
 }
 
-FString AMasterGameMode::InitNewPlayer(class APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal /*= TEXT("")*/)
+void AMasterGameMode::HandleMatchHasStarted()
 {
-	FString Result = Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
+	Super::HandleMatchHasStarted();
 
-	ABasePlayerState* NewPlayerState = Cast<ABasePlayerState>(NewPlayerController->PlayerState);
-	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
+	AMasterGameState* const MyGameState = Cast<AMasterGameState>(GameState);
+	MyGameState->RemainingTime = RoundTime;
 
-	if (NewPlayerState)
+	// notify players
+	for (FConstControllerIterator It = GetWorld()->GetControllerIterator(); It; ++It)
 	{
-		if (ThisGameState->NumRedPlayers <= ThisGameState->NumBluePlayers)
+		AMasterPlayerController* PC = Cast<AMasterPlayerController>(*It);
+		if (PC)
 		{
+			PC->ClientGameStarted();
+		}
+	}
+}
 
-			NewPlayerState->SetTeamNum(1);
-			ThisGameState->NumRedPlayers++;
+bool AMasterGameMode::ShouldSpawnAtStartSpot(AController* Player)
+{
+	return false;
+}
+
+AActor* AMasterGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	TArray<APlayerStart*> PreferredSpawns;
+	TArray<APlayerStart*> FallbackSpawns;
+
+	APlayerStart* BestStart = NULL;
+	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+	{
+		APlayerStart* TestSpawn = *It;
+		if (TestSpawn->IsA<APlayerStartPIE>())
+		{
+			// Always prefer the first "Play from Here" PlayerStart, if we find one while in PIE mode
+			BestStart = TestSpawn;
+			break;
 		}
 		else
 		{
-			NewPlayerState->SetTeamNum(2);
-			ThisGameState->NumBluePlayers++;
+			if (IsSpawnpointAllowed(TestSpawn, Player))
+			{
+				if (IsSpawnpointPreferred(TestSpawn, Player))
+				{
+					PreferredSpawns.Add(TestSpawn);
+				}
+				else
+				{
+					FallbackSpawns.Add(TestSpawn);
+				}
+			}
 		}
 	}
 
-	return Result;
+
+	if (BestStart == NULL)
+	{
+		if (PreferredSpawns.Num() > 0)
+		{
+			BestStart = PreferredSpawns[FMath::RandHelper(PreferredSpawns.Num())];
+		}
+		else if (FallbackSpawns.Num() > 0)
+		{
+			BestStart = FallbackSpawns[FMath::RandHelper(FallbackSpawns.Num())];
+		}
+	}
+
+	return BestStart ? BestStart : Super::ChoosePlayerStart_Implementation(Player);
 }
+
+
 
 
 bool AMasterGameMode::IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const
@@ -158,5 +227,105 @@ void AMasterGameMode::DetermineMatchWinner()
 bool AMasterGameMode::IsWinner(ABasePlayerState* PlayerState) const
 {
 	return false;
+}
+
+bool AMasterGameMode::IsSpawnpointPreferred(APlayerStart* SpawnPoint, AController* Player) const
+{
+	ACharacter* MyPawn = Cast<ACharacter>((*DefaultPawnClass)->GetDefaultObject<ACharacter>());
+
+
+	if (MyPawn)
+	{
+		const FVector SpawnLocation = SpawnPoint->GetActorLocation();
+		for (ACharacter* OtherPawn : TActorRange<ACharacter>(GetWorld()))
+		{
+			if (OtherPawn != MyPawn)
+			{
+				const float CombinedHeight = (MyPawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + OtherPawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) * 2.0f;
+				const float CombinedRadius = MyPawn->GetCapsuleComponent()->GetScaledCapsuleRadius() + OtherPawn->GetCapsuleComponent()->GetScaledCapsuleRadius();
+				const FVector OtherLocation = OtherPawn->GetActorLocation();
+
+				// check if player start overlaps this pawn
+				if (FMath::Abs(SpawnLocation.Z - OtherLocation.Z) < CombinedHeight && (SpawnLocation - OtherLocation).Size2D() < CombinedRadius)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void AMasterGameMode::FinishMatch()
+{
+	AMasterGameState* const MyGameState = Cast<AMasterGameState>(GameState);
+	if (IsMatchInProgress())
+	{
+		EndMatch();
+		DetermineMatchWinner();
+
+		// notify players
+		for (FConstControllerIterator It = GetWorld()->GetControllerIterator(); It; ++It)
+		{
+			ABasePlayerState* PlayerState = Cast<ABasePlayerState>((*It)->PlayerState);
+			const bool bIsWinner = IsWinner(PlayerState);
+
+			(*It)->GameHasEnded(NULL, bIsWinner);
+		}
+
+		// lock all pawns
+		// pawns are not marked as keep for seamless travel, so we will create new pawns on the next match rather than
+		// turning these back on.
+		for (APawn* Pawn : TActorRange<APawn>(GetWorld()))
+		{
+			Pawn->TurnOff();
+		}
+
+		// set up to restart the match
+		MyGameState->RemainingTime = TimeBetweenMatches;
+	}
+}
+
+void AMasterGameMode::RequestFinishAndExitToMainMenu()
+{
+	FinishMatch();
+
+	UBaseGameInstance* const GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->RemoveSplitScreenPlayers();
+	}
+
+	AMasterPlayerController* LocalPrimaryController = nullptr;
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		AMasterPlayerController* Controller = Cast<AMasterPlayerController>(*Iterator);
+
+		if (Controller == NULL)
+		{
+			continue;
+		}
+
+		if (!Controller->IsLocalController())
+		{
+			const FText RemoteReturnReason = NSLOCTEXT("NetworkErrors", "HostHasLeft", "Host has left the game.");
+			Controller->ClientReturnToMainMenuWithTextReason(RemoteReturnReason);
+		}
+		else
+		{
+			LocalPrimaryController = Controller;
+		}
+	}
+
+	// GameInstance should be calling this from an EndState.  So call the PC function that performs cleanup, not the one that sets GI state.
+	if (LocalPrimaryController != NULL)
+	{
+		LocalPrimaryController->HandleReturnToMainMenu();
+	}
 }
 

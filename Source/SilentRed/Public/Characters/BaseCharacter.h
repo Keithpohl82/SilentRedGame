@@ -90,7 +90,7 @@ public:
 
 
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	int32 TeamNum;
 	
 

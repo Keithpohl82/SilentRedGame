@@ -2,6 +2,7 @@
 
 
 #include "SilentRed/Public/Core/BaseGameInstance.h"
+#include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "Misc/DateTime.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
@@ -32,6 +33,30 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 
 	RecordingName = FDateTime::Now().ToString();
 	FriendlyRecordingName = "MyReplay";
+}
+
+void UBaseGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
+{
+	check(ExistingPlayer);
+	if (ExistingPlayer->PlayerController != NULL)
+	{
+		// Kill the player
+		
+	}
+
+	// Remove local split-screen players from the list
+	RemoveLocalPlayer(ExistingPlayer);
+}
+
+void UBaseGameInstance::RemoveSplitScreenPlayers()
+{
+	// if we had been split screen, toss the extra players now
+	// remove every player, back to front, except the first one
+	while (LocalPlayers.Num() > 1)
+	{
+		ULocalPlayer* const PlayerToRemove = LocalPlayers.Last();
+		RemoveExistingLocalPlayer(PlayerToRemove);
+	}
 }
 
 void UBaseGameInstance::Init()
