@@ -53,7 +53,7 @@ public:
 	TArray<int32> TeamScores;
 
 	/** time left for warmup / match */
-	UPROPERTY(Transient, Replicated)
+	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
 	int32 RemainingTime;
 
 	/** is timer paused? */

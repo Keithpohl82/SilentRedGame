@@ -2,6 +2,7 @@
 
 
 #include "SilentRed/Public/MenuSystem/InGameMenu.h"
+#include "SilentRed/Public/Core/BasePlayerState.h"
 #include "Components/Button.h"
 
 bool UInGameMenu::Initialize()
@@ -27,6 +28,8 @@ void UInGameMenu::QuitGamePressed()
 {
 	if (MenuInterface != nullptr)
 	{
+	//Get team number of player
+	//Reduce the number of players on player number team
 	Teardown();
 		MenuInterface->BackToMainMenu();
 	}

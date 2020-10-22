@@ -29,38 +29,14 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 	SpectatorClass = AMasterSpectatorPawn::StaticClass();
 	GameStateClass = AMasterGameState::StaticClass();
 
+	//RoundTime = 300;
+
 }
 
 
 void AMasterGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
-	ABasePlayerState* PlayerState = NewPlayer->GetPlayerState<ABasePlayerState>();
-	AMasterGameState* GState = GetGameState<AMasterGameState>();
-	APawn* PlayerPawn = NewPlayer->GetPawn();
-	ABaseCharacter* PlayerChar = Cast<ABaseCharacter>(NewPlayer);
-	AMasterPlayerController* Controller = Cast<AMasterPlayerController>(NewPlayer);
-
-	/*if (NewPlayer)
-	{
-		ABasePlayerState* PS = Cast<ABasePlayerState>(NewPlayer->PlayerState);
-		if (PS && GState)
-		{
-
-			if (GState->NumRedPlayers <= GState->NumBluePlayers)
-			{
-				PS->SetTeamNum(RedTeam);
-				GState->NumRedPlayers++;
-			}
-			else
-			{
-				PS->SetTeamNum(BlueTeam);
-				GState->NumBluePlayers++;
-			}
-		}
-	}*/
-
 }
 
 
@@ -84,10 +60,43 @@ void AMasterGameMode::DefaultTimer()
 
 		return;
 	}
-	 if (GetMatchState() == MatchState::WaitingToStart)
+
+	AMasterGameState* const MyGameState = Cast<AMasterGameState>(GameState);
+	if (MyGameState && MyGameState->RemainingTime > 0 && !MyGameState->bTimerPaused)
 	{
-		StartMatch();
+		MyGameState->RemainingTime--;
+
+		if (MyGameState->RemainingTime <= 0)
+		{
+			if (GetMatchState() == MatchState::WaitingPostMatch)
+			{
+				RestartGame();
+			}
+			else if (GetMatchState() == MatchState::InProgress)
+			{
+				FinishMatch();
+
+				// Send end round events
+				for (FConstControllerIterator It = GetWorld()->GetControllerIterator(); It; ++It)
+				{
+					AMasterPlayerController* PlayerController = Cast<AMasterPlayerController>(*It);
+
+					if (PlayerController && MyGameState)
+					{
+						ABasePlayerState* PlayerState = Cast<ABasePlayerState>((*It)->PlayerState);
+						const bool bIsWinner = IsWinner(PlayerState);
+
+						//PlayerController->ClientSendRoundEndEvent(bIsWinner, MyGameState->ElapsedTime);
+					}
+				}
+			}
+			else if (GetMatchState() == MatchState::WaitingToStart)
+			{
+				StartMatch();
+			}
+		}
 	}
+	
 }
 
 void AMasterGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

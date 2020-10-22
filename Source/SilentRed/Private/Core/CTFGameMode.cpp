@@ -16,7 +16,7 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	DefaultPawnClass = PlayerPawnOb.Class;
 
 	NumTeams = 2;
-	bDelayedStart = false;
+	bDelayedStart = true;
 
 	RedTeam = 1;
 	BlueTeam = 2;
