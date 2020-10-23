@@ -11,6 +11,7 @@ class USkeletalMeshComponent;
 class ABaseWeapon;
 class UHealthComponent;
 class UMaterialInstanceConstant;
+class ABasePlayerState;
 
 
 UCLASS()
@@ -88,9 +89,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Health)
 	float GetArmor();
 
+	int32 GetTeamNumber();
 
-
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	int32 TeamNum;
 	
 

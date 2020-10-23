@@ -58,9 +58,7 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRespawn();
 
-	int32 GetTeamNum()
-	{
-		return TeamNum;
-	}
+	int32 GetTeamNum();
+	
 
 };

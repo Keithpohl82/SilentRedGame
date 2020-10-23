@@ -48,6 +48,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(ABaseCharacter, CurrentWeapon);
 	DOREPLIFETIME(ABaseCharacter, PlayerSkins);
+	DOREPLIFETIME(ABaseCharacter, TeamNum);
 
 }
 
@@ -59,8 +60,7 @@ void ABaseCharacter::BeginPlay()
 	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
 	if (PS != nullptr)
 	{
-		TeamNum = PS->TeamNumber;
-
+		TeamNum = PS->GetTeamNumber();
 	}
 	
 
@@ -196,6 +196,11 @@ float ABaseCharacter::GetArmor()
 	return PlayerHealthComp->Armor;
 }
 
+int32 ABaseCharacter::GetTeamNumber()
+{
+	ABasePlayerState* PS = Cast<ABasePlayerState>(GetPlayerState());
+	return PS->TeamNumber;
+}
 
 
 

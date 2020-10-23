@@ -59,7 +59,7 @@ void ACTF_CapturePoint::NotifyActorBeginOverlap(AActor* OtherActor)
 	ABaseCharacter* OverlapChar = Cast<ABaseCharacter>(OtherActor);
 	if (OverlapChar)
 	{
-		if (OverlapChar->TeamNum != TeamNum)
+		if (OverlapChar->GetTeamNumber() != TeamNum)
 		{
 			GiveFlag(OverlapChar);
 		}
@@ -96,6 +96,11 @@ void ACTF_CapturePoint::ServerRespawn_Implementation()
 bool ACTF_CapturePoint::ServerRespawn_Validate()
 {
 	return true;
+}
+
+int32 ACTF_CapturePoint::GetTeamNum()
+{
+	return TeamNum;
 }
 
 void ACTF_CapturePoint::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
