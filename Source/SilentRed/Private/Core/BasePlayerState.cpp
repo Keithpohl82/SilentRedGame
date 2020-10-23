@@ -8,7 +8,8 @@
 #include "SilentRed/Public/Core/MasterGameState.h"
 
 
-ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer)
+
+ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	
 
@@ -49,6 +50,28 @@ void ABasePlayerState::ShotFired()
 	NumShotsFired += 1;
 }
 
+void ABasePlayerState::InformAboutKill_Implementation(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState)
+{
+	//id can be null for bots
+	if (KillerPlayerState->GetUniqueId().IsValid())
+	{
+		//search for the actual killer before calling OnKill()	
+		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			AMasterPlayerController* TestPC = Cast<AMasterPlayerController>(*It);
+			if (TestPC && TestPC->IsLocalController())
+			{
+				// a local player might not have an ID if it was created with CreateDebugPlayer.
+				ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(TestPC->Player);
+				FUniqueNetIdRepl LocalID = LocalPlayer->GetCachedUniqueNetId();
+				if (LocalID.IsValid() && *LocalPlayer->GetCachedUniqueNetId() == *KillerPlayerState->GetUniqueId())
+				{
+					TestPC->OnKill();
+				}
+			}
+		}
+	}
+}
 
 
 

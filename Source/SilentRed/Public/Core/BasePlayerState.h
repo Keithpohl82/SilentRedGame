@@ -19,16 +19,31 @@
  * 
  */
 UCLASS()
-class SILENTRED_API ABasePlayerState : public APlayerState
+class ABasePlayerState : public APlayerState
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
+
+	/** player killed someone */
+	//void ScoreKill(ABasePlayerState* Victim, int32 Points);
+
+	/** player died */
+	//void ScoreDeath(ABasePlayerState* KilledBy, int32 Points);
+
+	/** Sends kill (excluding self) to clients */
+	UFUNCTION(Reliable, Client)
+	void InformAboutKill(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState);
+
+	/** broadcast death to local clients */
+	//UFUNCTION(Reliable, NetMulticast)
+	//void BroadcastDeath(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState);
+
 
 public:
 
 
-	ABasePlayerState(const FObjectInitializer& ObjectInitializer);
+	
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void SetTeamNum(int32 NewTeamNumber);
 
 	UFUNCTION()

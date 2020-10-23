@@ -61,6 +61,8 @@ class AMasterGameMode : public AGameMode
 
 protected:
 
+	UPROPERTY(Config)
+	int32 PlayerRespawnTime;
 
 	UPROPERTY(config)
 	int32 TimeBetweenMatches;
@@ -88,6 +90,9 @@ protected:
 	/** Handle for efficient management of DefaultTimer timer */
 	FTimerHandle TimerHandle_DefaultTimer;
 
+	/** Respawn Timer handle */
+	FTimerHandle TimerHandle_RespawnTimer;
+
 	/** check if player can use spawnpoint */
 	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
 
@@ -106,6 +111,10 @@ public:
 	/** finish current match and lock players */
 	UFUNCTION(exec)
 	void FinishMatch();
+
+	void RestartDeadPlayer();
+
+	void RespawnPlayer();
 
 	/*Finishes the match and bumps everyone to main menu.*/
 	/*Only GameInstance should call this function */

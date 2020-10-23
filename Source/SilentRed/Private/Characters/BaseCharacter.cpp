@@ -4,6 +4,7 @@
 #include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
 #include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "SilentRed/Public/Core/MasterGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -156,11 +157,13 @@ void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health,
 		GetMovementComponent()->StopMovementImmediately();
 
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
-		DetachFromControllerPendingDestroy();
 
 		SetLifeSpan(5.0f);
+		
+		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
+		GM->RestartDeadPlayer();
 
+		DetachFromControllerPendingDestroy();
 	}
 }
 

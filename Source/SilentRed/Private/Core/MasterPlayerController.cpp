@@ -2,6 +2,7 @@
 
 
 #include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "Online.h"
 #include "Interfaces/OnlineEventsInterface.h"
 #include "Engine/World.h"
@@ -37,6 +38,11 @@ void AMasterPlayerController::RestartRecording()
 
 
 
+
+void AMasterPlayerController::OnKill()
+{
+	
+}
 
 void AMasterPlayerController::ClientGameStarted_Implementation()
 {

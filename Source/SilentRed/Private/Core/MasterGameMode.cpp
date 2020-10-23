@@ -31,6 +31,8 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 
 	//RoundTime = 300;
 
+	PlayerRespawnTime = 3;
+
 }
 
 
@@ -302,6 +304,23 @@ void AMasterGameMode::FinishMatch()
 
 		// set up to restart the match
 		MyGameState->RemainingTime = TimeBetweenMatches;
+	}
+}
+
+void AMasterGameMode::RestartDeadPlayer()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &AMasterGameMode::RespawnPlayer, PlayerRespawnTime, false);
+}
+
+void AMasterGameMode::RespawnPlayer()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn() == nullptr)
+		{
+			RestartPlayer(PC);
+		}
 	}
 }
 

@@ -26,6 +26,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Replays)
 	void RestartRecording();
 
+	void OnKill();
+
 protected:
 
 	/** if set, gameplay related actions (movement, weapn usage, etc) are allowed */
