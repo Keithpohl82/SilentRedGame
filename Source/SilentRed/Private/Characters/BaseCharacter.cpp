@@ -15,6 +15,7 @@
 #include "SilentRed/Public/Weapons/BaseWeapon.h"
 #include"SilentRed/SilentRed.h"
 #include "SilentRed/Public/Components/HealthComponent.h"
+#include "SilentRed/Public/Components/WeaponInventoryComponent.h"
 
 
 // Sets default values
@@ -36,11 +37,12 @@ ABaseCharacter::ABaseCharacter()
 
 	WeaponAttachSocketName = "WeaponSocket";
 
-	
-
 	GetCapsuleComponent()-> SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	PlayerHealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+
+	WeaponIndex = 0;
+
 }
 
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -50,6 +52,9 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, CurrentWeapon);
 	DOREPLIFETIME(ABaseCharacter, PlayerSkins);
 	DOREPLIFETIME(ABaseCharacter, TeamNum);
+	DOREPLIFETIME(ABaseCharacter, WeaponLoadout);
+	DOREPLIFETIME(ABaseCharacter, GunToSpawn);
+	DOREPLIFETIME(ABaseCharacter, WeaponIndex);
 
 }
 
@@ -67,8 +72,9 @@ void ABaseCharacter::BeginPlay()
 
 	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
 
+	WeaponToSpawn();
 
-	if (GetLocalRole() == ROLE_Authority)
+	/*if (GetLocalRole() == ROLE_Authority)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -79,7 +85,7 @@ void ABaseCharacter::BeginPlay()
 			CurrentWeapon->SetOwner(this);
 			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
 		}
-	}
+	}*/
 }
 
 // Called every frame
@@ -148,6 +154,102 @@ void ABaseCharacter::ReloadGun()
 
 
 
+void ABaseCharacter::ServerNextWeapon_Implementation()
+{
+	NextWeapon();
+}
+
+bool ABaseCharacter::ServerNextWeapon_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerPreviousWeapon_Implementation()
+{
+	PreviousWeapon();
+}
+
+bool ABaseCharacter::ServerPreviousWeapon_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerSpawnWeapon_Implementation()
+{
+	WeaponToSpawn();
+}
+
+bool ABaseCharacter::ServerSpawnWeapon_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::WeaponToSpawn()
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerSpawnWeapon();
+	}
+
+	FName WeaponSocket = "WeaponSocket";
+
+	GunToSpawn = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[WeaponIndex]);
+	GunToSpawn->SetOwner(this);
+	GunToSpawn->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+	CurrentWeapon = GunToSpawn;
+	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("WeaponToSpawn")));
+}
+
+void ABaseCharacter::NextWeapon()
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerNextWeapon();
+	}
+	if (WeaponLoadout.Num() > 0)
+	{
+		WeaponIndex++;
+		if (WeaponIndex == WeaponLoadout.Num())
+		{
+			// set visibility instead of destroy?
+			WeaponIndex = 0;
+
+			CurrentWeapon->Destroy();
+			WeaponToSpawn();
+		}
+		// set visibility instead of destroy?
+		CurrentWeapon->Destroy();
+		WeaponToSpawn();
+	}
+}
+
+void ABaseCharacter::PreviousWeapon()
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerPreviousWeapon();
+	}
+	if (WeaponLoadout.Num() > 1)
+	{
+		if (WeaponIndex > 0)
+		{
+			// set visibility instead of destroy?
+			WeaponIndex--;
+
+			CurrentWeapon->Destroy();
+			WeaponToSpawn();
+		}
+		else
+		{
+			// set visibility instead of destroy?
+			WeaponIndex = WeaponLoadout.Num() - 1;
+
+			CurrentWeapon->Destroy();
+			WeaponToSpawn();
+		}
+	}
+}
+
 void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (Health <= 0.0f && !bDied)
@@ -187,6 +289,10 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Released, this, &ABaseCharacter::StopFire);
 
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &ABaseCharacter::ReloadGun);
+
+	PlayerInputComponent->BindAction(TEXT("NextWeapon"), IE_Pressed, this, &ABaseCharacter::NextWeapon);
+	PlayerInputComponent->BindAction(TEXT("PreviousWeapon"), IE_Pressed, this, &ABaseCharacter::PreviousWeapon);
+
 }
 
 float ABaseCharacter::GetHealth()
