@@ -225,7 +225,7 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	UWorld* World = GetWorld();
 	if (!ensure(World != nullptr)) return;
 
-	World->ServerTravel("/Game/Levels/DefaultLevel?listen");
+	World->ServerTravel("/Game/Levels/JordanBlock?listen");
 }
 
 void UBaseGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)

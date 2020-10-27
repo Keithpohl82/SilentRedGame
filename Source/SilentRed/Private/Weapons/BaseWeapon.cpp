@@ -230,6 +230,7 @@ void ABaseWeapon::PlayWeaponEffects(FVector TraceEnd)
 	if (MuzzleEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
+		UGameplayStatics::SpawnSoundAttached(FireSound, MeshComp, MuzzleSocketName);
 	}
 
 	if (TracerEffect)

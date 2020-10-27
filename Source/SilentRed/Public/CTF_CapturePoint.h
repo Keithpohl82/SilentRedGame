@@ -47,6 +47,9 @@ protected:
 
 	void GiveFlag(ABaseCharacter* Target);
 
+	UPROPERTY(EditDefaultsOnly, Category = Sounds)
+	USoundBase* FlagStolen;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

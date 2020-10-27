@@ -74,18 +74,7 @@ void ABaseCharacter::BeginPlay()
 
 	WeaponToSpawn();
 
-	/*if (GetLocalRole() == ROLE_Authority)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		CurrentWeapon = GetWorld()->SpawnActor<ABaseWeapon>(StarterWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-		if (CurrentWeapon)
-		{
-			CurrentWeapon->SetOwner(this);
-			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
-		}
-	}*/
+	
 }
 
 // Called every frame

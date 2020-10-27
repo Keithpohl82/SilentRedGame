@@ -124,6 +124,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = EFX)
 	UParticleSystem* TracerEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = Sounds)
+	USoundBase* FireSound;
+
 
 	FTimerHandle TimerHandle_TimeBetweenShots;
 	FTimerHandle TimerHandle_RecoilReset;

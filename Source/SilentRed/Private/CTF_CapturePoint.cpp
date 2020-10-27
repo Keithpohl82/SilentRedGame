@@ -3,6 +3,7 @@
 
 #include "CTF_CapturePoint.h"
 #include "BaseFlag.h"
+#include "Kismet/GameplayStatics.h"
 #include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/DecalComponent.h"
@@ -62,6 +63,7 @@ void ACTF_CapturePoint::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (OverlapChar->GetTeamNumber() != TeamNum)
 		{
 			GiveFlag(OverlapChar);
+			UGameplayStatics::PlaySound2D(this, FlagStolen);
 		}
 	}
 }
