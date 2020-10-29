@@ -28,6 +28,9 @@ public:
 
 	void OnKill();
 
+	UFUNCTION(BlueprintCallable)
+	float GetKDA();
+
 protected:
 
 	/** if set, gameplay related actions (movement, weapn usage, etc) are allowed */
@@ -42,9 +45,20 @@ public:
 	UPROPERTY(Replicated)
 	int32 TeamNum = 0;
 
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	float Kills;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	float Deaths;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	float KDA;
+
 	/** notify player about started match */
 	UFUNCTION(reliable, client)
 	void ClientGameStarted();
+
+
 
 	// For tracking whether or not to send the end event
 	bool bHasSentStartEvents;

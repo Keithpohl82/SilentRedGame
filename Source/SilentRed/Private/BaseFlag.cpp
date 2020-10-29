@@ -4,7 +4,7 @@
 #include "BaseFlag.h"
 #include "CTF_CapturePoint.h"
 #include "SilentRed/Public/Characters/BaseCharacter.h"
-#include "SilentRed/Public/Components/HealthComponent.h"
+#include "SilentRed/Public/Components/PlayerHealthComp.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SceneComponent.h"
@@ -200,7 +200,7 @@ void ABaseFlag::Tick(float DeltaTime)
 				);
 			}
 				
-			UHealthComponent* OwnerHealth = Cast<UHealthComponent>(FlagOwner->GetComponentByClass(UHealthComponent::StaticClass()));
+			UPlayerHealthComp* OwnerHealth = Cast<UPlayerHealthComp>(FlagOwner->GetComponentByClass(UPlayerHealthComp::StaticClass()));
 			if (ensure(OwnerHealth))
 			{
 				if (OwnerHealth->GetHealthAmount() <= 0)

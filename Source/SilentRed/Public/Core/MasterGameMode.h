@@ -18,9 +18,9 @@ class APlayerStart;
 class ABasePlayerState;
 class FUniqueNetId;
 
-/**
- * 
- */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
+
 UCLASS(config=Game)
 class AMasterGameMode : public AGameMode
 {
@@ -120,6 +120,9 @@ public:
 	/*Only GameInstance should call this function */
 	void RequestFinishAndExitToMainMenu();
 	
+	UPROPERTY(BlueprintAssignable)
+	FOnActorKilled OnActorKilled;
+
 
 	int8 TeamColor;
 

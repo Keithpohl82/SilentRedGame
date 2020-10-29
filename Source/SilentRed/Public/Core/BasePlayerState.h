@@ -23,20 +23,15 @@ class ABasePlayerState : public APlayerState
 {
 	GENERATED_UCLASS_BODY()
 
-	/** player killed someone */
-	//void ScoreKill(ABasePlayerState* Victim, int32 Points);
 
-	/** player died */
-	//void ScoreDeath(ABasePlayerState* KilledBy, int32 Points);
+
+
 
 	/** Sends kill (excluding self) to clients */
 	UFUNCTION(Reliable, Client)
 	void InformAboutKill(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState);
 
-	/** broadcast death to local clients */
-	//UFUNCTION(Reliable, NetMulticast)
-	//void BroadcastDeath(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState);
-
+	
 
 public:
 
@@ -77,7 +72,7 @@ public:
 	float PlayerScore;
 
 	/**Number of kills */
-	UPROPERTY(Transient, Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	int32 NumKills;
 
 	/** number of deaths */

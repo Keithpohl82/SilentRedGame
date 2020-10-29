@@ -65,14 +65,14 @@ protected:
 	void PreviousWeapon();
 
 	UFUNCTION()
-	void OnHealthChanged(UHealthComponent* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	void OnHealthChanged(UPlayerHealthComp* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	ABaseWeapon* CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = Health)
-	UHealthComponent* PlayerHealthComp;
+	UPlayerHealthComp* PlayerHealthComp;
 
 	/* Holds all weapons in players selected loadout*/
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapons")

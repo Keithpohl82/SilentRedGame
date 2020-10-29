@@ -17,7 +17,7 @@ ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer) 
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();
 	NumShotsFired = 0;
-
+	
 
 }
 
@@ -49,6 +49,7 @@ void ABasePlayerState::ShotFired()
 {
 	NumShotsFired += 1;
 }
+
 
 void ABasePlayerState::InformAboutKill_Implementation(class ABasePlayerState* KillerPlayerState, const UDamageType* KillerDamageType, class ABasePlayerState* KilledPlayerState)
 {

@@ -14,7 +14,7 @@
 #include "GameFramework/Actor.h"
 #include "SilentRed/Public/Weapons/BaseWeapon.h"
 #include"SilentRed/SilentRed.h"
-#include "SilentRed/Public/Components/HealthComponent.h"
+#include "SilentRed/Public/Components/PlayerHealthComp.h"
 #include "SilentRed/Public/Components/WeaponInventoryComponent.h"
 
 
@@ -39,7 +39,7 @@ ABaseCharacter::ABaseCharacter()
 
 	GetCapsuleComponent()-> SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
-	PlayerHealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	PlayerHealthComp = CreateDefaultSubobject<UPlayerHealthComp>(TEXT("PlayerHealth"));
 
 	WeaponIndex = 0;
 
@@ -71,10 +71,7 @@ void ABaseCharacter::BeginPlay()
 	
 
 	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
-
 	WeaponToSpawn();
-
-	
 }
 
 // Called every frame
@@ -175,7 +172,7 @@ bool ABaseCharacter::ServerSpawnWeapon_Validate()
 
 void ABaseCharacter::WeaponToSpawn()
 {
-	if (GetLocalRole() < ROLE_Authority)
+	if (!HasAuthority())
 	{
 		ServerSpawnWeapon();
 	}
@@ -239,7 +236,7 @@ void ABaseCharacter::PreviousWeapon()
 	}
 }
 
-void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+void ABaseCharacter::OnHealthChanged(UPlayerHealthComp* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (Health <= 0.0f && !bDied)
 	{
@@ -248,8 +245,12 @@ void ABaseCharacter::OnHealthChanged(UHealthComponent* HealthComp, float Health,
 		GetMovementComponent()->StopMovementImmediately();
 
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		SetLifeSpan(5.0f);
+
+		AMasterPlayerController* PC = Cast<AMasterPlayerController>(GetOwner());
+		PC->Deaths++;
 		
 		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
 		GM->RestartDeadPlayer();

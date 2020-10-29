@@ -17,6 +17,12 @@ AMasterPlayerController::AMasterPlayerController(const FObjectInitializer& Objec
 	bGameEndedFrame = false;
 
 	bHasSentStartEvents = false;
+
+	Kills = 0;
+
+	Deaths = 0;
+
+	KDA = Deaths / Kills; 
 }
 
 
@@ -44,6 +50,13 @@ void AMasterPlayerController::OnKill()
 	
 }
 
+
+
+float AMasterPlayerController::GetKDA()
+{
+	return Kills / Deaths;
+}
+
 void AMasterPlayerController::ClientGameStarted_Implementation()
 {
 	bAllowGameActions = true;
@@ -54,16 +67,21 @@ void AMasterPlayerController::ClientGameStarted_Implementation()
 	
 	bGameEndedFrame = false;
 
-			bHasSentStartEvents = true;
+	bHasSentStartEvents = true;
 		
 	
 }
+
+
 
 void AMasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMasterPlayerController, TeamNum);
+	DOREPLIFETIME(AMasterPlayerController, Kills);
+	DOREPLIFETIME(AMasterPlayerController, Deaths);
+	DOREPLIFETIME(AMasterPlayerController, KDA);
 }
 
 
