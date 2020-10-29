@@ -19,6 +19,11 @@ const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("Server Name");
 
 
+FString Jordan1 = TEXT("/Game/Levels/JordanBlock?listen");
+FString DefaultMap = TEXT("/Game/Levels/DefaultLevel?listen");
+
+FString MapList[2] = {Jordan1, DefaultMap};
+
 
 UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 {
@@ -202,7 +207,7 @@ void UBaseGameInstance::CreateSession()
 			SessionSettings.bIsLANMatch = false;
 		}
 
-		SessionSettings.NumPublicConnections = 4;
+		SessionSettings.NumPublicConnections = MaxNumberOfPlayers;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence =true;
 		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
@@ -225,7 +230,8 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	UWorld* World = GetWorld();
 	if (!ensure(World != nullptr)) return;
 
-	World->ServerTravel("/Game/Levels/JordanBlock?listen");
+
+	World->ServerTravel(Jordan1);
 }
 
 void UBaseGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)

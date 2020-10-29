@@ -210,8 +210,14 @@ bool ABaseWeapon::ServerReloadWeapon_Validate()
 void ABaseWeapon::StartFire()
 {
 	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ABaseWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	if (bIsAutomatic)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ABaseWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	}
+	else
+	{ 
+	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ABaseWeapon::Fire, TimeBetweenShots, false, FirstDelay);
+	}
 }
 
 void ABaseWeapon::StopFire()

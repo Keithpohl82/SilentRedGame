@@ -51,11 +51,14 @@ public:
 	//UFUNCTION()
 	//void JoinServerIndex(uint32 Index) override;
 
+	UPROPERTY(Config)
+	int32 MaxNumberOfPlayers;
+
 	void RefreshServerList() override;
 
 	virtual void BackToMainMenu() override;
 
-	
+	TArray<FString> MapsList;
 
 
 

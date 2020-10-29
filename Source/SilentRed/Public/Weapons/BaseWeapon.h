@@ -42,7 +42,7 @@ protected:
 	USkeletalMeshComponent* MeshComp;
 
 	
-	void Fire();
+	virtual void Fire();
 	
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -150,11 +150,14 @@ protected:
 
 public:	
 
-	void StartFire();
-	void StopFire();
+	virtual void StartFire();
+	virtual void StopFire();
 	void ReloadWeapon();
 
 	void RecoilReset();
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponConfig)
+	bool bIsAutomatic;
 
 
 

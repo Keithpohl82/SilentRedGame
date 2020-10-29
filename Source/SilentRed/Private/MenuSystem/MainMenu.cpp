@@ -34,10 +34,11 @@ void UMainMenu::SetServerList(TArray<FServerData> ServerNames)
 		UServerRow* Row = CreateWidget<UServerRow>(this, ServerRowClass);
 		if (!ensure(Row != nullptr)) return;
 
-		Row->ServerName->SetText(FText::FromString(ServerData.ServerName));
-		Row->HostUser->SetText(FText::FromString(ServerData.HostUser));
 		FString ServerPing = FString::Printf(TEXT("%d"), ServerData.ServerPing);
 		FString FractionText = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+
+		Row->ServerName->SetText(FText::FromString(ServerData.ServerName));
+		Row->HostUser->SetText(FText::FromString(ServerData.HostUser));
 		Row->ConnectionFraction->SetText(FText::FromString(FractionText));
 		Row->ServerPing->SetText(FText::FromString(ServerPing));
 		Row->Setup(this, i);
