@@ -3,6 +3,8 @@
 
 #include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "SilentRed/Public/Characters/BaseCharacter.h"
+#include "SilentRed/Public/Core/BasePlayerState.h"
+#include "SilentRed/Public/Core/MasterGameState.h"
 #include "Online.h"
 #include "Interfaces/OnlineEventsInterface.h"
 #include "Engine/World.h"
@@ -47,6 +49,7 @@ void AMasterPlayerController::RestartRecording()
 
 void AMasterPlayerController::OnKill()
 {
+	AMasterGameState* GS = Cast<AMasterGameState>(GetWorld()->GetGameState());
 	
 }
 
@@ -82,6 +85,7 @@ void AMasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AMasterPlayerController, Kills);
 	DOREPLIFETIME(AMasterPlayerController, Deaths);
 	DOREPLIFETIME(AMasterPlayerController, KDA);
+	DOREPLIFETIME(AMasterPlayerController, Points);
 }
 
 

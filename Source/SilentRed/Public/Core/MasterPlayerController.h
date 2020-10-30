@@ -54,6 +54,9 @@ public:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	float KDA;
 
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	float Points;
+
 	/** notify player about started match */
 	UFUNCTION(reliable, client)
 	void ClientGameStarted();

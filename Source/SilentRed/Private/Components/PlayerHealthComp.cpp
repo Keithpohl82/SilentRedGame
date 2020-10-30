@@ -79,6 +79,7 @@ void UPlayerHealthComp::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 			
 
 			KillerPC->Kills++;
+			KillerPC->Points++;
 			
 
 			GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);

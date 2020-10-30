@@ -150,7 +150,7 @@ void ABaseFlag::OnReachDest()
 		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(GetOwner());
 		ABasePlayerState* PlayerState = Cast<ABasePlayerState>(PlayerCharacter->GetPlayerState());
 		ACTFGameMode* GM = Cast<ACTFGameMode>(GetWorld()->GetAuthGameMode());
-
+		
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
@@ -163,10 +163,12 @@ void ABaseFlag::OnReachDest()
 			if (TeamNum == 0)
 			{
 				GM->FlagCapture(1);
+				
 			}
 			else
 			{
 				GM->FlagCapture(0);
+				
 			}
 		}
 	}

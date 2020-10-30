@@ -251,11 +251,12 @@ void ABaseCharacter::OnHealthChanged(UPlayerHealthComp* HealthComp, float Health
 
 		AMasterPlayerController* PC = Cast<AMasterPlayerController>(GetOwner());
 		PC->Deaths++;
-		
+
+		DetachFromControllerPendingDestroy();
+
 		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
 		GM->RestartDeadPlayer();
 
-		DetachFromControllerPendingDestroy();
 	}
 }
 

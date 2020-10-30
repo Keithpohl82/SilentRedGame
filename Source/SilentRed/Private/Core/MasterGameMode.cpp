@@ -175,7 +175,7 @@ void AMasterGameMode::HandleMatchHasStarted()
 
 bool AMasterGameMode::ShouldSpawnAtStartSpot(AController* Player)
 {
-	return false;
+	return true;
 }
 
 AActor* AMasterGameMode::ChoosePlayerStart_Implementation(AController* Player)
