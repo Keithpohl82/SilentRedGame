@@ -15,16 +15,17 @@ class SILENTRED_API ABasePistol : public ABaseWeapon
 {
 	GENERATED_BODY()
 	
-
+	ABasePistol();
 
 protected:
 
 	virtual void Fire() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = Projectiles)
-	TSubclassOf<AActor> ProjectileClass;
+
 
 public:
+
+
 
 
 };

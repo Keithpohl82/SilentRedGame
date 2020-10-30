@@ -25,6 +25,8 @@ public:
 
 };
 
+
+
 UCLASS(Config=WeaponConfig)
 class SILENTRED_API ABaseWeapon : public AActor
 {
@@ -64,7 +66,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponConfig)
 	TSubclassOf<UDamageType> DamageType;
 	//Name of the weapon
-	UPROPERTY(EditDefaultsOnly, Category = WeaponConfig)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponConfig)
 	FName WeaponName;
 	//Damage multiplier for head shots. Must be > 1
 	UPROPERTY(EditDefaultsOnly, Category = WeaponConfig)
@@ -114,6 +116,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
 	float DefaultRecoilTimePerShot;
 
+	
+
 
 	UPROPERTY(EditDefaultsOnly, Category = EFX)
 	UParticleSystem* MuzzleEffect;
@@ -149,6 +153,11 @@ protected:
 
 
 public:	
+
+	bool bisEquipped;
+
+	UPROPERTY(EditDefaultsOnly, Category = Player)
+	FName UnequippedSocket;
 
 	virtual void StartFire();
 	virtual void StopFire();

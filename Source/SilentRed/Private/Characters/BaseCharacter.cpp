@@ -43,6 +43,8 @@ ABaseCharacter::ABaseCharacter()
 
 	WeaponIndex = 0;
 
+	
+
 }
 
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -53,7 +55,6 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, PlayerSkins);
 	DOREPLIFETIME(ABaseCharacter, TeamNum);
 	DOREPLIFETIME(ABaseCharacter, WeaponLoadout);
-	DOREPLIFETIME(ABaseCharacter, GunToSpawn);
 	DOREPLIFETIME(ABaseCharacter, WeaponIndex);
 
 }
@@ -71,7 +72,10 @@ void ABaseCharacter::BeginPlay()
 	
 
 	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
-	WeaponToSpawn();
+	
+	SpawnInventory();
+	
+	//WeaponToSpawn();
 }
 
 // Called every frame
@@ -170,6 +174,121 @@ bool ABaseCharacter::ServerSpawnWeapon_Validate()
 	return true;
 }
 
+void ABaseCharacter::ServerSpawnInventory_Implementation()
+{
+	SpawnInventory();
+}
+
+bool ABaseCharacter::ServerSpawnInventory_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerSpawnPrimaryWeapon_Implementation()
+{
+	SpawnPrimaryWeapon();
+}
+
+bool ABaseCharacter::ServerSpawnPrimaryWeapon_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerSpawnSecondaryWeapon_Implementation()
+{
+	SpawnSecondaryWeapon();
+}
+
+bool ABaseCharacter::ServerSpawnSecondaryWeapon_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerSpawnPistol_Implementation()
+{
+	SpawnPistol();
+}
+
+bool ABaseCharacter::ServerSpawnPistol_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::ServerSpawnKnife_Implementation()
+{
+	SpawnKnife();
+}
+
+bool ABaseCharacter::ServerSpawnKnife_Validate()
+{
+	return true;
+}
+
+void ABaseCharacter::SpawnInventory()
+{
+	if (!HasAuthority())
+	{
+		ServerSpawnInventory();
+	}
+		SpawnPrimaryWeapon();
+		SpawnSecondaryWeapon();
+		SpawnPistol();
+		SpawnKnife();
+}
+
+void ABaseCharacter::SpawnPrimaryWeapon()
+{
+	if (!HasAuthority())
+	{
+		ServerSpawnPrimaryWeapon();
+	}
+
+	FName WeaponSocket = "WeaponSocket";
+
+		PrimaryWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[0]);
+		PrimaryWeapon->SetOwner(this);
+		PrimaryWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+		CurrentWeapon = PrimaryWeapon;
+		CurrentWeapon->bisEquipped = true;
+	
+}
+
+void ABaseCharacter::SpawnSecondaryWeapon()
+{
+	if (!HasAuthority())
+	{
+		ServerSpawnSecondaryWeapon();
+	}
+	SecondaryWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[1]);
+	SecondaryWeapon->SetOwner(this);
+	SecondaryWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->UnequippedSocket);
+	SecondaryWeapon->bisEquipped = false;
+}
+
+void ABaseCharacter::SpawnPistol()
+{
+	if (!HasAuthority())
+	{
+		ServerSpawnPistol();
+	}
+	Pistol = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[2]);
+	Pistol->SetOwner(this);
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Pistol->UnequippedSocket);
+	Pistol->bisEquipped = false;
+}
+
+void ABaseCharacter::SpawnKnife()
+{
+	if (!HasAuthority())
+	{
+		ServerSpawnKnife();
+	}
+	Knife = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[3]);
+	Knife->SetOwner(this);
+	Knife->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Knife->UnequippedSocket);
+	Knife->bisEquipped = false;
+}
+
 void ABaseCharacter::WeaponToSpawn()
 {
 	if (!HasAuthority())
@@ -179,11 +298,24 @@ void ABaseCharacter::WeaponToSpawn()
 
 	FName WeaponSocket = "WeaponSocket";
 
-	GunToSpawn = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[WeaponIndex]);
-	GunToSpawn->SetOwner(this);
-	GunToSpawn->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-	CurrentWeapon = GunToSpawn;
+	
+
+	
 	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("WeaponToSpawn")));
+}
+
+void ABaseCharacter::UnequipWeapon()
+{
+	CurrentWeapon->bisEquipped = false;
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurrentWeapon->UnequippedSocket);
+}
+
+
+
+void ABaseCharacter::EquipWeapon()
+{
+
+	CurrentWeapon->bisEquipped = true;
 }
 
 void ABaseCharacter::NextWeapon()
@@ -197,15 +329,22 @@ void ABaseCharacter::NextWeapon()
 		WeaponIndex++;
 		if (WeaponIndex == WeaponLoadout.Num())
 		{
-			// set visibility instead of destroy?
 			WeaponIndex = 0;
 
-			CurrentWeapon->Destroy();
-			WeaponToSpawn();
+
+			UnequipWeapon();
+
+			//CurrentWeapon->Destroy();
+			//WeaponToSpawn();
+			EquipWeapon();
 		}
-		// set visibility instead of destroy?
-		CurrentWeapon->Destroy();
-		WeaponToSpawn();
+
+		UnequipWeapon();
+
+		//CurrentWeapon->Destroy();
+
+		//WeaponToSpawn();
+		EquipWeapon();
 	}
 }
 
@@ -219,19 +358,23 @@ void ABaseCharacter::PreviousWeapon()
 	{
 		if (WeaponIndex > 0)
 		{
-			// set visibility instead of destroy?
 			WeaponIndex--;
 
-			CurrentWeapon->Destroy();
-			WeaponToSpawn();
+			UnequipWeapon();
+			//CurrentWeapon->Destroy();
+			//WeaponToSpawn();
+
+			EquipWeapon();
 		}
 		else
 		{
-			// set visibility instead of destroy?
 			WeaponIndex = WeaponLoadout.Num() - 1;
 
-			CurrentWeapon->Destroy();
-			WeaponToSpawn();
+			UnequipWeapon();
+			//CurrentWeapon->Destroy();
+			//WeaponToSpawn();
+
+			EquipWeapon();
 		}
 	}
 }

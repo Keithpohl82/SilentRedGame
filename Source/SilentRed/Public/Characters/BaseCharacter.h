@@ -57,10 +57,29 @@ protected:
 	void ServerPreviousWeapon();
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerSpawnWeapon();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnInventory();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnPrimaryWeapon();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnSecondaryWeapon();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnPistol();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnKnife();
 
+	void UnequipWeapon();
+	void EquipWeapon();
 
-
+	void SpawnInventory();
+	void SpawnPrimaryWeapon();
+	void SpawnSecondaryWeapon();
+	void SpawnPistol();
+	void SpawnKnife();
 	void WeaponToSpawn();
+
+
+	
 	void NextWeapon();
 	void PreviousWeapon();
 
@@ -79,8 +98,6 @@ protected:
 	TArray<TSubclassOf<ABaseWeapon>> WeaponLoadout;
 
 
-	UPROPERTY(Replicated, BlueprintReadWrite)
-	ABaseWeapon* GunToSpawn;
 
 	//UPROPERTY(EditDefaultsOnly, Category = Weapons)
 	//TSubclassOf<ABaseWeapon> StarterWeaponClass;
@@ -90,6 +107,15 @@ protected:
 	bool bDied;
 
 public:	
+
+	
+	ABaseWeapon* PrimaryWeapon;
+	ABaseWeapon* SecondaryWeapon;
+	ABaseWeapon* Pistol;
+	ABaseWeapon* Nade;
+	ABaseWeapon* Knife;
+
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
