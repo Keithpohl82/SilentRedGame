@@ -87,8 +87,7 @@ protected:
 	void OnHealthChanged(UPlayerHealthComp* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	ABaseWeapon* CurrentWeapon;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = Health)
 	UPlayerHealthComp* PlayerHealthComp;
@@ -97,7 +96,10 @@ protected:
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapons")
 	TArray<TSubclassOf<ABaseWeapon>> WeaponLoadout;
 
+	TArray<ABaseWeapon*> Inventory;
 
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	ABaseWeapon* CurrentWeapon;
 
 	//UPROPERTY(EditDefaultsOnly, Category = Weapons)
 	//TSubclassOf<ABaseWeapon> StarterWeaponClass;

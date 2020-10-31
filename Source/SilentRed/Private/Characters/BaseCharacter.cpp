@@ -314,8 +314,7 @@ void ABaseCharacter::UnequipWeapon()
 
 void ABaseCharacter::EquipWeapon()
 {
-
-	CurrentWeapon->bisEquipped = true;
+	
 }
 
 void ABaseCharacter::NextWeapon()

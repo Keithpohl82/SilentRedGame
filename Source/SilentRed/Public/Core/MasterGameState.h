@@ -28,10 +28,10 @@ class AMasterGameState : public AGameState
 public:
 
 
-	UPROPERTY(Transient, Replicated)
+	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
 	int32 RedPoints;
 
-	UPROPERTY(Transient, Replicated)
+	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
 	int32 BluePoints;
 
 	int32 RedTeam = 1;

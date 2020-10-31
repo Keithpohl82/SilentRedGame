@@ -30,8 +30,13 @@ protected:
 	/** best team */
 	int32 WinnerTeam;
 
+	UPROPERTY(Config)
+	int32 ScoreToWin;
+
 	/** pick team with least players in or random when it's equal */
 	int32 ChooseTeam(ABasePlayerState* ForPlayerState) const;
+
+	void CheckForWinner();
 
 	/** check who won */
 	virtual void DetermineMatchWinner() override;
@@ -42,6 +47,7 @@ protected:
 	/** check team constraints */
 	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
 	
+	bool bATeamWon;
 
 public:
 
