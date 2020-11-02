@@ -13,6 +13,10 @@ class UHealthComponent;
 class UMaterialInstanceConstant;
 class ABasePlayerState;
 class ABaseWeapon;
+class AMasterWeapon;
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBaseCharacterEquipWeapon, ABaseCharacter*, AMasterWeapon* /* new */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBaseCharacteUnEquipWeapon, ABaseCharacter*, AMasterWeapon* /* old */);
 
 UCLASS()
 class SILENTRED_API ABaseCharacter : public ACharacter
@@ -117,6 +121,13 @@ public:
 	ABaseWeapon* Nade;
 	ABaseWeapon* Knife;
 
+	FName GetWeaponAttachPoint() const;
+
+	bool CanFire();
+	bool CanReload();
+
+	USkeletalMeshComponent* GetSpecificPawnMesh(bool WantFirstPerson) const;
+	USkeletalMeshComponent* GetPawnMesh() const;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -144,6 +155,9 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = Weapons)
 	int32 WeaponIndex;
+
+	static FOnBaseCharacterEquipWeapon NotifyEquipWeapon;
+	static FOnBaseCharacteUnEquipWeapon NotifyUnEquipWeapon;
 	
 
 };

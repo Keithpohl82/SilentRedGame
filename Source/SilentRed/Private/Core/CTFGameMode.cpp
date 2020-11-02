@@ -104,7 +104,6 @@ void ACTFGameMode::DetermineMatchWinner()
 			NumBestTeams++;
 		}
 	}
-
 	WinnerTeam = (NumBestTeams == 1) ? BestTeam : NumTeams;
 }
 
@@ -125,7 +124,6 @@ bool ACTFGameMode::IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Pl
 			return false;
 		}
 	}
-
 	return Super::IsSpawnpointAllowed(SpawnPoint, Player);
 }
 
@@ -134,8 +132,6 @@ void ACTFGameMode::FlagCapture(int32 TeamThatCapturedIt)
 	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
 	if (ThisGameState)
 	{
-		
-
 		if (TeamThatCapturedIt == RedTeam)
 		{	
 				ACTF_CapturePoint* Loc = Cast<ACTF_CapturePoint>(GetWorld());

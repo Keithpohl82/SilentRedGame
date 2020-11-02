@@ -146,30 +146,23 @@ bool ABaseFlag::ServerBeginPlay_Validate()
 
 void ABaseFlag::OnReachDest()
 {
-
 		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(GetOwner());
 		ABasePlayerState* PlayerState = Cast<ABasePlayerState>(PlayerCharacter->GetPlayerState());
 		ACTFGameMode* GM = Cast<ACTFGameMode>(GetWorld()->GetAuthGameMode());
-		
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		Detach();
-		
-		
 
 		if (GM)
 		{
 			if (TeamNum == 1)
 			{
-				
 				GM->FlagCapture(1);
-				
 			}
 			else
 			{
 				GM->FlagCapture(2);
-				
 			}
 		}
 	}
@@ -179,8 +172,6 @@ void ABaseFlag::OnReachDest()
 void ABaseFlag::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
 
 	// int32 PlayersHealth = FlagOwner->GetHealth();
 
@@ -203,15 +194,18 @@ void ABaseFlag::Tick(float DeltaTime)
 				);
 			}
 				
+				//Drop flag  and set timer for respawn instead of detach
+			
+
 			UPlayerHealthComp* OwnerHealth = Cast<UPlayerHealthComp>(FlagOwner->GetComponentByClass(UPlayerHealthComp::StaticClass()));
 			if (ensure(OwnerHealth))
 			{
 				if (OwnerHealth->GetHealthAmount() <= 0)
 				{
+
 					Detach();
 
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("no health"));
-
 				}
 			}
 		}

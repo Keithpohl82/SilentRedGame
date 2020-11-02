@@ -13,9 +13,15 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Actor.h"
 #include "SilentRed/Public/Weapons/BaseWeapon.h"
+#include "SilentRed/Public/Weapons/MasterWeapon.h"
 #include"SilentRed/SilentRed.h"
 #include "SilentRed/Public/Components/PlayerHealthComp.h"
 #include "SilentRed/Public/Components/WeaponInventoryComponent.h"
+
+
+FOnBaseCharacterEquipWeapon ABaseCharacter::NotifyEquipWeapon;
+FOnBaseCharacteUnEquipWeapon ABaseCharacter::NotifyUnEquipWeapon;
+
 
 
 // Sets default values
@@ -76,6 +82,31 @@ void ABaseCharacter::BeginPlay()
 	SpawnInventory();
 	
 	//WeaponToSpawn();
+}
+
+FName ABaseCharacter::GetWeaponAttachPoint() const
+{
+	return WeaponAttachSocketName;
+}
+
+bool ABaseCharacter::CanFire()
+{
+	return bDied;
+}
+
+bool ABaseCharacter::CanReload()
+{
+	return true;
+}
+
+USkeletalMeshComponent* ABaseCharacter::GetSpecificPawnMesh(bool WantFirstPerson) const
+{
+	return WantFirstPerson == true ? GetMesh() : GetMesh();
+}
+
+USkeletalMeshComponent* ABaseCharacter::GetPawnMesh() const
+{
+	return GetMesh();
 }
 
 // Called every frame
@@ -298,9 +329,6 @@ void ABaseCharacter::WeaponToSpawn()
 
 	FName WeaponSocket = "WeaponSocket";
 
-	
-
-	
 	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("WeaponToSpawn")));
 }
 
