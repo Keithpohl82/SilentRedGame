@@ -25,22 +25,10 @@ namespace EWeaponState
 	};
 }
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FWeaponData
 {
 	GENERATED_BODY()
-
-	//Max ammo amount allowed
-	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	int32 MaxAmmo;
-
-	//Amount of ammo in a clip
-	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	int32 AmmoPerClip;
-
-	//Starting number of clips
-	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	int32 InitialClips;
 
 	//Time between shots for Rate of fire
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
@@ -57,21 +45,22 @@ struct FWeaponData
 	float BulletEndPoint;
 
 	// Bullets fired per minuet
-	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
+	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
 	float RateOfFire;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
+	int32 ShotgunPellets;
 
 
 	//SetsDefaults
 	FWeaponData()
 	{
-		MaxAmmo = 90;
-		AmmoPerClip = 25;
-		InitialClips = 3;
-		TimeBetweenShots = 0.2f;
-		ReloadDuration = 1.0f;
+		TimeBetweenShots = 0;
+		ReloadDuration = 0;
 		RecoilTimeBetweenShots = 0.0f;
-		BulletEndPoint = 15000;
-		RateOfFire = 600.0f;
+		BulletEndPoint = 0;
+		RateOfFire = 0;
+		ShotgunPellets = 0;
 	}
 };
 
@@ -137,8 +126,22 @@ public:
 	UPROPERTY(Transient, Replicated)
 	int32  CurrentAmmoInClip;
 
-	UPROPERTY(replicated, BlueprintReadWrite, Category = "Ammo")
+	//Amount of ammo in a clip
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = WeaponStats)
+	int32 AmmoPerClip;
+
+	//Starting number of clips
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = WeaponStats)
+	int32 InitialClips;
+
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Ammo")
 	int Ammo;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = WeaponStats)
+	int32 BackupAmmo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponStats)
+	FName WeaponName;
 
 	//////////////////////////////////////////////////////////////////////////
 	//Inventory
@@ -200,55 +203,57 @@ protected:
 	void DeterMineWeaponState();
 
 	UPROPERTY(replicated)
-		int AmountToReload;
+	int AmountToReload;
 
+	UPROPERTY()
 	float RecoilTimePerShot;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-		FName EjectSocketName;
+	FName EjectSocketName;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-		FName MuzzleSocketName;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-		FName TracerTargetName;
+	FName MuzzleSocketName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
+	FName TracerTargetName;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-		UParticleSystem* MuzzleEffect;
+	UParticleSystem* MuzzleEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-		UParticleSystem* EjectEffect;
+	UParticleSystem* EjectEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-		UParticleSystem* DefaultImpactEffect;
+	UParticleSystem* DefaultImpactEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-		UParticleSystem* FleshImpactEffect;
+	UParticleSystem* FleshImpactEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-		UParticleSystem* TracerEffect;
+	UParticleSystem* TracerEffect;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-		USoundBase* MuzzleSound;
+	USoundBase* MuzzleSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-		USoundBase* ImpactSound;
+	USoundBase* ImpactSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-		USoundBase* ReloadSound;
+	USoundBase* ReloadSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-		USoundBase* OutOfAmmoSound;
+	USoundBase* OutOfAmmoSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
-		TSubclassOf<UDamageType> DamageType;
+	TSubclassOf<UDamageType> DamageType;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-		float BaseDamage;
+	float BaseDamage;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-		float HeadShotBonus;
+	float HeadShotBonus;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-		UCurveFloat* VerticalRecoil;
+	UCurveFloat* VerticalRecoil;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-		UCurveFloat* HorizontalRecoil;
+	UCurveFloat* HorizontalRecoil;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-		float RecoilRecoveryTime;
+	float RecoilRecoveryTime;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-		float RecoilRecoveryDelay;
+	float RecoilRecoveryDelay;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-		float RecoilMultiplyer;
+	float RecoilMultiplyer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
-		bool isAuto;
+	bool isAuto;
+
 
 
 
@@ -291,10 +296,10 @@ protected:
 
 	/** weapon data */
 	UPROPERTY(EditDefaultsOnly, Category = Config)
-		FWeaponData WeaponConfig;
+	FWeaponData WeaponConfig;
 
 	UPROPERTY(EditDefaultsOnly, Category = Config)
-		bool bIsShotGun;
+	bool bIsShotGun;
 
 public:	
 	// Called every frame

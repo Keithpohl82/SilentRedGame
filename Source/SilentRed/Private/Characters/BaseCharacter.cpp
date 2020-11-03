@@ -7,6 +7,7 @@
 #include "SilentRed/Public/Core/MasterGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
@@ -23,6 +24,13 @@ FOnBaseCharacterEquipWeapon ABaseCharacter::NotifyEquipWeapon;
 FOnBaseCharacteUnEquipWeapon ABaseCharacter::NotifyUnEquipWeapon;
 
 
+
+void ABaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ABaseCharacter::SpawnDefaultInventory);
+}
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -62,7 +70,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, TeamNum);
 	DOREPLIFETIME(ABaseCharacter, WeaponLoadout);
 	DOREPLIFETIME(ABaseCharacter, WeaponIndex);
-
+	DOREPLIFETIME(ABaseCharacter, DeathAnim);
 }
 
 // Called when the game starts or when spawned
@@ -78,10 +86,7 @@ void ABaseCharacter::BeginPlay()
 	
 
 	PlayerHealthComp->OnHealthChanged.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
-	
-	SpawnInventory();
-	
-	//WeaponToSpawn();
+
 }
 
 FName ABaseCharacter::GetWeaponAttachPoint() const
@@ -169,11 +174,21 @@ void ABaseCharacter::ReloadGun()
 {
 	if (CurrentWeapon)
 	{
-		CurrentWeapon->ReloadWeapon();
+		CurrentWeapon->Reload();
 	}
 }
 
 
+
+void ABaseCharacter::ServerEquipWeapon_Implementation(class AMasterWeapon* Weapon)
+{
+	EquipWeapon(Weapon);
+}
+
+bool ABaseCharacter::ServerEquipWeapon_Validate(class AMasterWeapon* NewWeapon)
+{
+	return true;
+}
 
 void ABaseCharacter::ServerNextWeapon_Implementation()
 {
@@ -195,154 +210,103 @@ bool ABaseCharacter::ServerPreviousWeapon_Validate()
 	return true;
 }
 
-void ABaseCharacter::ServerSpawnWeapon_Implementation()
-{
-	WeaponToSpawn();
-}
 
-bool ABaseCharacter::ServerSpawnWeapon_Validate()
+void ABaseCharacter::SetCurrentWeapon(class AMasterWeapon* NewWeapon, class AMasterWeapon* LastWeapon /*= NULL*/)
 {
-	return true;
-}
-
-void ABaseCharacter::ServerSpawnInventory_Implementation()
-{
-	SpawnInventory();
-}
-
-bool ABaseCharacter::ServerSpawnInventory_Validate()
-{
-	return true;
-}
-
-void ABaseCharacter::ServerSpawnPrimaryWeapon_Implementation()
-{
-	SpawnPrimaryWeapon();
-}
-
-bool ABaseCharacter::ServerSpawnPrimaryWeapon_Validate()
-{
-	return true;
-}
-
-void ABaseCharacter::ServerSpawnSecondaryWeapon_Implementation()
-{
-	SpawnSecondaryWeapon();
-}
-
-bool ABaseCharacter::ServerSpawnSecondaryWeapon_Validate()
-{
-	return true;
-}
-
-void ABaseCharacter::ServerSpawnPistol_Implementation()
-{
-	SpawnPistol();
-}
-
-bool ABaseCharacter::ServerSpawnPistol_Validate()
-{
-	return true;
-}
-
-void ABaseCharacter::ServerSpawnKnife_Implementation()
-{
-	SpawnKnife();
-}
-
-bool ABaseCharacter::ServerSpawnKnife_Validate()
-{
-	return true;
-}
-
-void ABaseCharacter::SpawnInventory()
-{
-	if (!HasAuthority())
+	AMasterWeapon* LocalLastWeapon = nullptr;
+	if (LastWeapon != NULL)
 	{
-		ServerSpawnInventory();
+		LocalLastWeapon = LastWeapon;
 	}
-		SpawnPrimaryWeapon();
-		SpawnSecondaryWeapon();
-		SpawnPistol();
-		SpawnKnife();
-}
-
-void ABaseCharacter::SpawnPrimaryWeapon()
-{
-	if (!HasAuthority())
+	else if (NewWeapon != CurrentWeapon)
 	{
-		ServerSpawnPrimaryWeapon();
+		LocalLastWeapon = CurrentWeapon;
 	}
 
-	FName WeaponSocket = "WeaponSocket";
-
-		PrimaryWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[0]);
-		PrimaryWeapon->SetOwner(this);
-		PrimaryWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-		CurrentWeapon = PrimaryWeapon;
-		CurrentWeapon->bisEquipped = true;
-	
-}
-
-void ABaseCharacter::SpawnSecondaryWeapon()
-{
-	if (!HasAuthority())
+	//UnEquip previous weapon
+	if (LocalLastWeapon)
 	{
-		ServerSpawnSecondaryWeapon();
-	}
-	SecondaryWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[1]);
-	SecondaryWeapon->SetOwner(this);
-	SecondaryWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->UnequippedSocket);
-	SecondaryWeapon->bisEquipped = false;
-}
-
-void ABaseCharacter::SpawnPistol()
-{
-	if (!HasAuthority())
-	{
-		ServerSpawnPistol();
-	}
-	Pistol = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[2]);
-	Pistol->SetOwner(this);
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Pistol->UnequippedSocket);
-	Pistol->bisEquipped = false;
-}
-
-void ABaseCharacter::SpawnKnife()
-{
-	if (!HasAuthority())
-	{
-		ServerSpawnKnife();
-	}
-	Knife = GetWorld()->SpawnActor<ABaseWeapon>(WeaponLoadout[3]);
-	Knife->SetOwner(this);
-	Knife->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Knife->UnequippedSocket);
-	Knife->bisEquipped = false;
-}
-
-void ABaseCharacter::WeaponToSpawn()
-{
-	if (!HasAuthority())
-	{
-		ServerSpawnWeapon();
+		LocalLastWeapon->OnUnEquip();
 	}
 
-	FName WeaponSocket = "WeaponSocket";
+	CurrentWeapon = NewWeapon;
 
-	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("WeaponToSpawn")));
+	//Equip a new weapon
+	if (NewWeapon)
+	{
+		NewWeapon->SetOwningPawn(this);
+
+		NewWeapon->OnEquip(LastWeapon);
+	}
 }
 
-void ABaseCharacter::UnequipWeapon()
+
+void ABaseCharacter::EquipWeapon(class AMasterWeapon* Weapon)
 {
-	CurrentWeapon->bisEquipped = false;
-	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurrentWeapon->UnequippedSocket);
+	if (Weapon)
+	{
+
+		SetCurrentWeapon(Weapon, CurrentWeapon);
+
+		if (GetLocalRole() < ROLE_Authority)
+		{
+			ServerEquipWeapon(Weapon);
+
+		}
+		
+	}
 }
 
-
-
-void ABaseCharacter::EquipWeapon()
+void ABaseCharacter::OnRep_CurrentWeapon(class AMasterWeapon* LastWeapon)
 {
-	
+	SetCurrentWeapon(CurrentWeapon, LastWeapon);
+}
+
+void ABaseCharacter::Destroyed()
+{
+	Super::Destroyed();
+	DestroyInventory();
+}
+
+int32 ABaseCharacter::GetInventoryCount() const
+{
+	return Inventory.Num();
+}
+
+class AMasterWeapon* ABaseCharacter::GetInventoryWeapon(int32 index) const
+{
+	return Inventory[index];
+}
+
+void ABaseCharacter::AddWeapon(class AMasterWeapon* Weapon)
+{
+	if (Weapon && GetLocalRole() == ROLE_Authority)
+	{
+		Weapon->OnEnterInventory(this);
+		Inventory.AddUnique(Weapon);
+	}
+}
+
+void ABaseCharacter::RemoveWeapon(class AMasterWeapon* Weapon)
+{
+	if (Weapon && GetLocalRole() == ROLE_Authority)
+	{
+		Weapon->OnLeaveInventory();
+		Inventory.RemoveSingle(Weapon);
+	}
+}
+
+class AMasterWeapon* ABaseCharacter::FindWeapon(TSubclassOf<class AMasterWeapon> WeaponClass)
+{
+	for (int32 i = 0; i < Inventory.Num(); i++)
+	{
+		if (Inventory[i] && Inventory[i]->IsA(WeaponClass))
+		{
+			return Inventory[i];
+		}
+	}
+
+	return NULL;
 }
 
 void ABaseCharacter::NextWeapon()
@@ -351,57 +315,79 @@ void ABaseCharacter::NextWeapon()
 	{
 		ServerNextWeapon();
 	}
-	if (WeaponLoadout.Num() > 0)
+
+	AMasterPlayerController* MyPC = Cast<AMasterPlayerController>(Controller);
+	if (MyPC)
 	{
-		WeaponIndex++;
-		if (WeaponIndex == WeaponLoadout.Num())
+		if (Inventory.Num() >= 2 && (CurrentWeapon == NULL || CurrentWeapon->GetCurrentState() != EWeaponState::Equipping))
 		{
-			WeaponIndex = 0;
-
-
-			UnequipWeapon();
-
-			//CurrentWeapon->Destroy();
-			//WeaponToSpawn();
-			EquipWeapon();
+			const int32 CurrentWeaponIdx = Inventory.IndexOfByKey(CurrentWeapon);
+			AMasterWeapon* NextWeapon = Inventory[(CurrentWeaponIdx + 1) % Inventory.Num()];
+			EquipWeapon(NextWeapon);
 		}
-
-		UnequipWeapon();
-
-		//CurrentWeapon->Destroy();
-
-		//WeaponToSpawn();
-		EquipWeapon();
 	}
 }
 
 void ABaseCharacter::PreviousWeapon()
 {
+
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		ServerPreviousWeapon();
 	}
-	if (WeaponLoadout.Num() > 1)
+
+	AMasterPlayerController* MyPC = Cast<AMasterPlayerController>(Controller);
+	if (MyPC)
 	{
-		if (WeaponIndex > 0)
+		if (Inventory.Num() >= 2 && (CurrentWeapon == NULL || CurrentWeapon->GetCurrentState() != EWeaponState::Equipping))
 		{
-			WeaponIndex--;
-
-			UnequipWeapon();
-			//CurrentWeapon->Destroy();
-			//WeaponToSpawn();
-
-			EquipWeapon();
+			const int32 CurrentWeaponIdx = Inventory.IndexOfByKey(CurrentWeapon);
+			AMasterWeapon* PrevWeapon = Inventory[(CurrentWeaponIdx - 1 + Inventory.Num()) % Inventory.Num()];
+			EquipWeapon(PrevWeapon);
 		}
-		else
+	}
+}
+
+void ABaseCharacter::SpawnDefaultInventory()
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		return;
+	}
+
+	int32 NumWeaponClass = WeaponLoadout.Num();
+	for (int32 i = 0; i < NumWeaponClass; i++)
+	{
+		if (WeaponLoadout[i])
 		{
-			WeaponIndex = WeaponLoadout.Num() - 1;
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			UnequipWeapon();
-			//CurrentWeapon->Destroy();
-			//WeaponToSpawn();
+			AMasterWeapon* NewWeapon = GetWorld()->SpawnActor<AMasterWeapon>(WeaponLoadout[i], SpawnInfo);
+			AddWeapon(NewWeapon);
+		}
+	}
+	if (Inventory.Num() > 0)
+	{
+		EquipWeapon(Inventory[0]);
+	}
+}
 
-			EquipWeapon();
+void ABaseCharacter::DestroyInventory()
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		return;
+	}
+
+	// remove all weapons from inventory and destroy them
+	for (int32 i = Inventory.Num() - 1; i >= 0; i--)
+	{
+		AMasterWeapon* Weapon = Inventory[i];
+		if (Weapon)
+		{
+			RemoveWeapon(Weapon);
+			Weapon->Destroy();
 		}
 	}
 }
@@ -421,11 +407,16 @@ void ABaseCharacter::OnHealthChanged(UPlayerHealthComp* HealthComp, float Health
 
 		AMasterPlayerController* PC = Cast<AMasterPlayerController>(GetOwner());
 		PC->Deaths++;
+		GetMesh()->PlayAnimation(DeathAnim, false);
 
 		DetachFromControllerPendingDestroy();
 
+		DestroyInventory();
+
 		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
 		GM->RestartDeadPlayer();
+
+		
 
 	}
 }

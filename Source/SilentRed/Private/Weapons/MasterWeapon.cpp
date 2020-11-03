@@ -40,19 +40,25 @@ AMasterWeapon::AMasterWeapon()
 	bPendingEquip = false;
 	CurrentState = EWeaponState::Idle;
 
+	AmmoPerClip = 0;
+	InitialClips = 0;
+	BackupAmmo = 0;
+
 	CurrentAmmo = 0;
 	CurrentAmmoInClip = 0;
 
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
 
-	NetUpdateFrequency = 66.0f;
+	NetUpdateFrequency = 144.0f;
 	MinNetUpdateFrequency = 33.0f;
 
 }
 
 void AMasterWeapon::StartReload(bool bFromReplication /*= false*/)
 {
+
+
 	if (!bFromReplication && GetLocalRole() < ROLE_Authority)
 	{
 		ServerReloadGun();
@@ -63,14 +69,14 @@ void AMasterWeapon::StartReload(bool bFromReplication /*= false*/)
 		bPendingReload = true;
 		DeterMineWeaponState();
 
-		float Duration = 5.5f;
-		GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AMasterWeapon::StopReload, WeaponConfig.ReloadDuration, false);
-		UE_LOG(LogTemp, Warning, TEXT("STOP  Reload timer should be called here......"))
+		
 			if (GetLocalRole() == ROLE_Authority)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Reload timer should be called here......"))
-					GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AMasterWeapon::Reload, FMath::Max(0.1f, WeaponConfig.ReloadDuration - 0.1f), false);
+			UE_LOG(LogTemp, Log, TEXT("Reload timer should be called here......"));
+			GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AMasterWeapon::Reload, FMath::Max(0.1f, WeaponConfig.ReloadDuration - 0.1f), false);
 			}
+			UE_LOG(LogTemp, Log, TEXT("STOP  Reload timer should be called here......"));
+			GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AMasterWeapon::StopReload, WeaponConfig.ReloadDuration, false);
 
 	}
 }
@@ -188,7 +194,7 @@ void AMasterWeapon::BeginPlay()
 
 	TimeBetweenShots = 60 / WeaponConfig.RateOfFire;
 
-	Ammo = WeaponConfig.AmmoPerClip;
+	Ammo = AmmoPerClip;
 	
 }
 
@@ -199,6 +205,7 @@ void AMasterWeapon::AttachMeshToPawn()
 		DetachMeshFromPawn();
 
 		FName AttachPoint = MyPawn->GetWeaponAttachPoint();
+
 		if (MyPawn->IsLocallyControlled() == true)
 		{
 			USkeletalMeshComponent* PawnMesh1p = MyPawn->GetSpecificPawnMesh(true);
@@ -217,8 +224,13 @@ void AMasterWeapon::AttachMeshToPawn()
 
 void AMasterWeapon::DetachMeshFromPawn()
 {
+
+	USkeletalMeshComponent* UsePawnMesh = MyPawn->GetPawnMesh();
+
 	MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	MeshComp->SetHiddenInGame(true);
+	MeshComp->AttachToComponent(UsePawnMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, MyPawn->UnEquippedSocket);
+	MeshComp->SetHiddenInGame(false);
+	
 
 }
 
@@ -289,7 +301,7 @@ void AMasterWeapon::Fire()
 
 		if (bIsShotGun)
 		{
-			for (int32 i = 0; i < 10; i++)
+			for (int32 i = 0; i < WeaponConfig.ShotgunPellets; i++)
 			{
 				Ammo--;
 
@@ -529,6 +541,8 @@ void AMasterWeapon::StopFire()
 
 void AMasterWeapon::ServerReloadGun_Implementation()
 {
+	UE_LOG(LogTemp, Log, TEXT("ServerReload called"));
+
 	StartReload(true);
 }
 
@@ -544,24 +558,17 @@ void AMasterWeapon::Reload()
 		ServerReloadGun();
 	}
 
-	if (WeaponConfig.MaxAmmo < WeaponConfig.AmmoPerClip)
+	if (BackupAmmo >= AmmoPerClip)
 	{
-		AmountToReload = WeaponConfig.MaxAmmo;
-
-		WeaponConfig.MaxAmmo = 0;
-
-		Ammo = Ammo + AmountToReload;
-
-
+		BackupAmmo = BackupAmmo - AmountToReload;
+		AmountToReload = AmmoPerClip - Ammo;
+		Ammo = AmmoPerClip;
 	}
 	else
 	{
-		AmountToReload = WeaponConfig.AmmoPerClip - Ammo;
-
-		WeaponConfig.MaxAmmo = WeaponConfig.MaxAmmo - AmountToReload;
-
-		Ammo = WeaponConfig.AmmoPerClip;
-
+		AmountToReload = BackupAmmo;
+		BackupAmmo = 0;
+		Ammo = Ammo + AmountToReload;
 	}
 }
 
@@ -572,7 +579,7 @@ int AMasterWeapon::GetAmmo()
 
 int AMasterWeapon::GetTotalAmmo()
 {
-	return WeaponConfig.MaxAmmo;
+	return BackupAmmo;
 }
 
 void AMasterWeapon::ServerFire_Implementation()
@@ -623,6 +630,7 @@ void AMasterWeapon::StopReload()
 	{
 		bPendingReload = false;
 		DeterMineWeaponState();
+		GetWorldTimerManager().ClearTimer(TimerHandle_ReloadWeapon);
 	}
 }
 
@@ -642,7 +650,7 @@ bool AMasterWeapon::CanFire() const
 bool AMasterWeapon::CanReload() const
 {
 	bool bCanReload = (!MyPawn || MyPawn->CanReload());
-	bool bGotAmmo = (CurrentAmmoInClip < WeaponConfig.AmmoPerClip) && (CurrentAmmo - CurrentAmmoInClip > 0);
+	bool bGotAmmo = (CurrentAmmoInClip < AmmoPerClip) && (CurrentAmmo - CurrentAmmoInClip > 0);
 	bool bStateOKToReload = ((CurrentState == EWeaponState::Idle) || (CurrentState == EWeaponState::Firing));
 	return((bCanReload == true) && (bGotAmmo == true) && (bStateOKToReload == true));
 }
@@ -661,4 +669,7 @@ void AMasterWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AMasterWeapon, CurrentAmmo);
 	DOREPLIFETIME(AMasterWeapon, AmountToReload);
 	DOREPLIFETIME(AMasterWeapon, Ammo);
+	DOREPLIFETIME(AMasterWeapon, BackupAmmo);
+	DOREPLIFETIME(AMasterWeapon, InitialClips);
+	DOREPLIFETIME(AMasterWeapon, AmmoPerClip);
 }

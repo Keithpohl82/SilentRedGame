@@ -8,7 +8,6 @@
 
 class UCameraComponent;
 class USkeletalMeshComponent;
-class UWeaponInventoryComponent;
 class UHealthComponent;
 class UMaterialInstanceConstant;
 class ABasePlayerState;
@@ -23,9 +22,14 @@ class SILENTRED_API ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+		/** spawn inventory, setup initial variables */
+		virtual void PostInitializeComponents() override;
+
 		UPROPERTY(EditDefaultsOnly, Category = Camera)
 		UCameraComponent* CameraComp;
 
+
+		
 	
 
 public:
@@ -55,37 +59,42 @@ protected:
 
 
 	/* Replication server side functions */
+
+	UFUNCTION(reliable, server, WithValidation)
+	void ServerEquipWeapon(class AMasterWeapon* NewWeapon);
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerNextWeapon();
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerPreviousWeapon();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnWeapon();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnInventory();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnPrimaryWeapon();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnSecondaryWeapon();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnPistol();
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSpawnKnife();
-
-	void UnequipWeapon();
-	void EquipWeapon();
-
-	void SpawnInventory();
-	void SpawnPrimaryWeapon();
-	void SpawnSecondaryWeapon();
-	void SpawnPistol();
-	void SpawnKnife();
-	void WeaponToSpawn();
 
 
+	/** updates current weapon */
+	void SetCurrentWeapon(class AMasterWeapon* NewWeapon, class AMasterWeapon* LastWeapon = NULL);
+	void EquipWeapon( class AMasterWeapon* Weapon);
+
+	/** current weapon rep handler */
+	UFUNCTION()
+	void OnRep_CurrentWeapon(class AMasterWeapon* LastWeapon);
+
+	/** cleanup inventory */
+	virtual void Destroyed() override;
+
+	/** get total number of inventory items */
+	int32 GetInventoryCount() const;
+
+	class AMasterWeapon* GetInventoryWeapon(int32 index) const;
 	
+	void AddWeapon(class AMasterWeapon* Weapon);
+	void RemoveWeapon(class AMasterWeapon* Weapon);
+	class AMasterWeapon* FindWeapon(TSubclassOf<class AMasterWeapon> WeaponClass);
 	void NextWeapon();
 	void PreviousWeapon();
+
+	/** [server] spawns default inventory */
+	void SpawnDefaultInventory();
+
+	/** [server] remove all weapons from inventory and destroy them */
+	void DestroyInventory();
 
 	UFUNCTION()
 	void OnHealthChanged(UPlayerHealthComp* HealthComp, float Health, float Armor, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -98,28 +107,20 @@ protected:
 
 	/* Holds all weapons in players selected loadout*/
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapons")
-	TArray<TSubclassOf<ABaseWeapon>> WeaponLoadout;
+	TArray<TSubclassOf<AMasterWeapon>> WeaponLoadout;
 
-	TArray<ABaseWeapon*> Inventory;
+	TArray<AMasterWeapon*> Inventory;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
-	ABaseWeapon* CurrentWeapon;
+	AMasterWeapon* CurrentWeapon;
 
-	//UPROPERTY(EditDefaultsOnly, Category = Weapons)
-	//TSubclassOf<ABaseWeapon> StarterWeaponClass;
-
-
-
+	UPROPERTY(BlueprintReadOnly)
 	bool bDied;
 
 public:	
 
-	
-	ABaseWeapon* PrimaryWeapon;
-	ABaseWeapon* SecondaryWeapon;
-	ABaseWeapon* Pistol;
-	ABaseWeapon* Nade;
-	ABaseWeapon* Knife;
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = Animations)
+	UAnimSequence* DeathAnim;
 
 	FName GetWeaponAttachPoint() const;
 
@@ -141,6 +142,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	UPROPERTY(VisibleDefaultsOnly, Category = Weapons)
 	FName WeaponAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	FName UnEquippedSocket;
 
 	UFUNCTION(BlueprintCallable, Category = Health)
 	float GetHealth();
