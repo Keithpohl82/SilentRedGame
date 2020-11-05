@@ -305,7 +305,7 @@ void AMasterWeapon::Fire()
 			{
 				Ammo--;
 
-
+				StartReload();
 				AActor* MyOwner = GetOwner();
 
 				if (MyOwner)
@@ -317,9 +317,9 @@ void AMasterWeapon::Fire()
 					AController* ControllerOwner = PawnOwner->GetController();
 					ControllerOwner->GetPlayerViewPoint(EyeLocation, EyeRotation);
 
-					float SpreadMax = 1.1;
+					float SpreadMax = 1.2;
 					float SpreadMin = -1.1;
-					FVector ShotDirection = FMath::VRandCone(EyeRotation.Vector(), 0.07);
+					FVector ShotDirection = FMath::VRandCone(EyeRotation.Vector(), 0.15);
 
 					FVector TraceEnd = EyeLocation + (ShotDirection * WeaponConfig.BulletEndPoint);
 
