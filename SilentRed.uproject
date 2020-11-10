@@ -24,10 +24,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "WebAuth",
-			"Enabled": true
-		},
-		{
 			"Name": "SQLiteCore",
 			"Enabled": true
 		},
@@ -58,6 +54,16 @@
 		{
 			"Name": "UdpMessaging",
 			"Enabled": false
+		},
+		{
+			"Name": "SteamVR",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win32",
+				"Win64",
+				"Linux",
+				"Mac"
+			]
 		}
 	]
 }

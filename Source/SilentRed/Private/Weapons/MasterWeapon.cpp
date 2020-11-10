@@ -672,4 +672,6 @@ void AMasterWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AMasterWeapon, BackupAmmo);
 	DOREPLIFETIME(AMasterWeapon, InitialClips);
 	DOREPLIFETIME(AMasterWeapon, AmmoPerClip);
+	DOREPLIFETIME(AMasterWeapon, bPendingReload);
+	DOREPLIFETIME(AMasterWeapon, MyPawn);
 }

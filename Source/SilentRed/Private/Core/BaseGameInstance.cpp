@@ -19,11 +19,6 @@ const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("Server Name");
 
 
-FString Jordan1 = TEXT("/Game/Levels/JordanBlock?listen");
-FString DefaultMap = TEXT("/Game/Levels/DefaultLevel?listen");
-
-FString MapList[2] = {Jordan1, DefaultMap};
-
 
 UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 {
@@ -175,7 +170,7 @@ void UBaseGameInstance::BackToMainMenu()
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!ensure(PlayerController != nullptr)) return;
 
-	PlayerController->ClientTravel("/Game/Levels/MainMenuLevel", ETravelType::TRAVEL_Absolute);
+	PlayerController->ClientTravel("/Game/Maps/MainMenuLevel", ETravelType::TRAVEL_Absolute);
 }
 
 void UBaseGameInstance::StartRecording()
@@ -207,6 +202,8 @@ void UBaseGameInstance::CreateSession()
 			SessionSettings.bIsLANMatch = false;
 		}
 
+		
+		SessionSettings.bAllowJoinInProgress =true;
 		SessionSettings.NumPublicConnections = MaxNumberOfPlayers;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence =true;
@@ -231,7 +228,7 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	if (!ensure(World != nullptr)) return;
 
 
-	World->ServerTravel(Jordan1);
+	World->ServerTravel("/Game/Maps/JordanBlock");
 }
 
 void UBaseGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
