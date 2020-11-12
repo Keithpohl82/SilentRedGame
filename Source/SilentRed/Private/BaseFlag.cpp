@@ -146,12 +146,12 @@ bool ABaseFlag::ServerBeginPlay_Validate()
 
 void ABaseFlag::OnReachDest()
 {
-		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(GetOwner());
-		ABasePlayerState* PlayerState = Cast<ABasePlayerState>(PlayerCharacter->GetPlayerState());
+
 		ACTFGameMode* GM = Cast<ACTFGameMode>(GetWorld()->GetAuthGameMode());
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
+
 		Detach();
 
 		if (GM)
@@ -159,10 +159,12 @@ void ABaseFlag::OnReachDest()
 			if (TeamNum == 1)
 			{
 				GM->FlagCapture(1);
+				UGameplayStatics::PlaySound2D(this, FlagCaptured);
 			}
 			else
 			{
 				GM->FlagCapture(2);
+				UGameplayStatics::PlaySound2D(this, FlagCaptured);
 			}
 		}
 	}

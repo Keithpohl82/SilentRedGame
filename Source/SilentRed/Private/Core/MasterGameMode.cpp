@@ -68,6 +68,8 @@ void AMasterGameMode::DefaultTimer()
 	{
 		MyGameState->RemainingTime--;
 
+
+
 		if (MyGameState->RemainingTime <= 0)
 		{
 			if (GetMatchState() == MatchState::WaitingPostMatch)

@@ -18,8 +18,13 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	NumTeams = 2;
 	bDelayedStart = true;
 
+	bRedTeamWon = false;
+	bBlueTeamWon = false;
+
 	RedTeam = 1;
 	BlueTeam = 2;
+
+	ScoreToWin = 1;
 	
 }
 
@@ -71,14 +76,17 @@ void ACTFGameMode::CheckForWinner()
 {
 	AMasterGameState* CurrentGameState = Cast<AMasterGameState>(GameState);
 
-	if (CurrentGameState->BluePoints == ScoreToWin)
+	if (CurrentGameState->BluePoints == 2)
 	{
 		FinishMatch();
-
+		bRedTeamWon = false;
+		bBlueTeamWon = true;
 	}
-	if (CurrentGameState->RedPoints == ScoreToWin)
+	else if (CurrentGameState->RedPoints == 2)
 	{
 		FinishMatch();
+		bRedTeamWon = true;
+		bBlueTeamWon = false;
 	}
 
 }

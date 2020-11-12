@@ -43,6 +43,8 @@ public:
 	UPROPERTY(Replicated)
 	int32 NumBluePlayers;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* OneMinRemaining;
 
 	/** number of teams in current game (doesn't deprecate when no players are left in a team) */
 	UPROPERTY(Transient, Replicated)
@@ -60,7 +62,7 @@ public:
 	UPROPERTY(Transient, Replicated)
 	bool bTimerPaused;
 
-	
+	void PlayTimeLeft();
 
 	void RequestFinishAndExitToMainMenu();
 

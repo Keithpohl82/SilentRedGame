@@ -47,7 +47,9 @@ protected:
 	/** check team constraints */
 	virtual bool IsSpawnpointAllowed(APlayerStart* SpawnPoint, AController* Player) const;
 	
-	bool bATeamWon;
+	bool bRedTeamWon;
+
+	bool bBlueTeamWon;
 
 public:
 

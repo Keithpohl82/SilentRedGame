@@ -42,7 +42,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Flag")
 	UStaticMeshComponent* MeshCompFlag;
 
-
+	UPROPERTY(EditDefaultsOnly, Category = Sounds)
+	USoundBase* FlagCaptured;
 
 
 	UPROPERTY(Replicated)

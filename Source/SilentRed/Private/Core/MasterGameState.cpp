@@ -6,6 +6,7 @@
 #include "SilentRed/Public/Core/BaseGameInstance.h"
 #include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -33,6 +34,14 @@ void AMasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 }
 
 
+
+void AMasterGameState::PlayTimeLeft()
+{
+	if (RemainingTime == 60)
+	{
+		UGameplayStatics::PlaySound2D(this, OneMinRemaining);
+	}
+}
 
 void AMasterGameState::RequestFinishAndExitToMainMenu()
 {

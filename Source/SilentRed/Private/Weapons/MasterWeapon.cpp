@@ -305,7 +305,6 @@ void AMasterWeapon::Fire()
 			{
 				Ammo--;
 
-				StartReload();
 				AActor* MyOwner = GetOwner();
 
 				if (MyOwner)

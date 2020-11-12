@@ -86,6 +86,9 @@ protected:
 	UPROPERTY(Config)
 	int32 NumberOfTeams;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* OneMinRemaining;
+
 
 	/** Handle for efficient management of DefaultTimer timer */
 	FTimerHandle TimerHandle_DefaultTimer;
