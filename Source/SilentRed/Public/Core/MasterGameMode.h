@@ -19,6 +19,7 @@ class ABasePlayerState;
 class FUniqueNetId;
 
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
 
 UCLASS(config=Game)
@@ -86,8 +87,7 @@ protected:
 	UPROPERTY(Config)
 	int32 NumberOfTeams;
 
-	UPROPERTY(EditDefaultsOnly)
-	USoundBase* OneMinRemaining;
+
 
 
 	/** Handle for efficient management of DefaultTimer timer */

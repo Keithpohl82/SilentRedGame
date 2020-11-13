@@ -24,6 +24,7 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 	DefaultPawnClass = PlayerPawnOb.Class;
 
 
+
 	PlayerStateClass = ABasePlayerState::StaticClass();
 	PlayerControllerClass = AMasterPlayerController::StaticClass();
 	SpectatorClass = AMasterSpectatorPawn::StaticClass();
@@ -67,7 +68,6 @@ void AMasterGameMode::DefaultTimer()
 	if (MyGameState && MyGameState->RemainingTime > 0 && !MyGameState->bTimerPaused)
 	{
 		MyGameState->RemainingTime--;
-
 
 
 		if (MyGameState->RemainingTime <= 0)

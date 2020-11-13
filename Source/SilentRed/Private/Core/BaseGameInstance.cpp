@@ -11,7 +11,6 @@
 #include "SilentRed/Public/MenuSystem/MainMenu.h"
 #include "SilentRed/Public/MenuSystem/MenuWidget.h"
 #include "OnlineSubsystem.h"
-
 #include "OnlineSessionSettings.h"
 
 
@@ -82,6 +81,7 @@ void UBaseGameInstance::Init()
 		UE_LOG(LogTemp, Warning, TEXT("Failed to find Subsystem"));
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Found Class %s"), *MenuClass->GetName());
+
 }
 
 void UBaseGameInstance::LoadMainMenu()
@@ -210,6 +210,9 @@ void UBaseGameInstance::CreateSession()
 		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+
+		// FOR TESTING DEDICATED SERVER
+		UE_LOG(LogTemp, Warning, TEXT("Create Session was called"));
 	}
 }
 
@@ -219,6 +222,8 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	{
 		_Menu->Teardown();
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Create Session COMPLETE was called"));
 
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine != nullptr)) return;
