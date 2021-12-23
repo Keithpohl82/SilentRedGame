@@ -13,15 +13,14 @@
 #include "TimerManager.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Actor.h"
-#include "SilentRed/Public/Weapons/BaseWeapon.h"
-#include "SilentRed/Public/Weapons/MasterWeapon.h"
+#include "Weapons/MasterWeapon.h"
 #include"SilentRed/SilentRed.h"
 #include "SilentRed/Public/Components/PlayerHealthComp.h"
 #include "SilentRed/Public/Components/WeaponInventoryComponent.h"
 
 
-FOnBaseCharacterEquipWeapon ABaseCharacter::NotifyEquipWeapon;
-FOnBaseCharacteUnEquipWeapon ABaseCharacter::NotifyUnEquipWeapon;
+ FOnBaseCharacterEquipWeapon ABaseCharacter::NotifyEquipWeapon;
+ FOnBaseCharacteUnEquipWeapon ABaseCharacter::NotifyUnEquipWeapon;
 
 
 
@@ -406,17 +405,15 @@ void ABaseCharacter::OnHealthChanged(UPlayerHealthComp* HealthComp, float Health
 		SetLifeSpan(5.0f);
 
 		AMasterPlayerController* PC = Cast<AMasterPlayerController>(GetOwner());
-		PC->Deaths++;
+		//PC->Deaths++;
 		GetMesh()->PlayAnimation(DeathAnim, false);
 
 		DetachFromControllerPendingDestroy();
 
-		DestroyInventory();
+		//DestroyInventory();
 
 		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
 		GM->RestartDeadPlayer();
-
-		
 
 	}
 }

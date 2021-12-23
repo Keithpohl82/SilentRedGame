@@ -27,7 +27,7 @@ ABaseFlag::ABaseFlag()
 
 	MeshCompFlag = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Flag Mesh"));
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 void ABaseFlag::AttachFlagToPlayer(ABaseCharacter* Player)
 {

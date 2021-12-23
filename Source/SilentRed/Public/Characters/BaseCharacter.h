@@ -11,7 +11,7 @@ class USkeletalMeshComponent;
 class UHealthComponent;
 class UMaterialInstanceConstant;
 class ABasePlayerState;
-class ABaseWeapon;
+// class ABaseWeapon;
 class AMasterWeapon;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBaseCharacterEquipWeapon, ABaseCharacter*, AMasterWeapon* /* new */);

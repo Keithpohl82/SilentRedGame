@@ -12,6 +12,7 @@
 #include "SilentRed/Public/Characters/MasterSpectatorPawn.h"
 #include "SilentRed/SilentRed.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/GameSession.h"
 #include "EngineUtils.h"
 #include "Engine/PlayerStartPIE.h"
 #include "Components/CapsuleComponent.h"
@@ -107,7 +108,7 @@ void AMasterGameMode::DefaultTimer()
 void AMasterGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-
+	
 	const UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance /*&& Cast<UBaseGameInstance>(GameInstance)->GetOnlineMode() != EOnlineMode::Offline*/)
 	{

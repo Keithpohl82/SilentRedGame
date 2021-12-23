@@ -6,6 +6,8 @@
 #include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/Engine.h"
 
 
 
@@ -17,7 +19,6 @@ void UPlayerHealthComp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UPlayerHealthComp, Armor);
 }
 
-
 // Sets default values for this component's properties
 UPlayerHealthComp::UPlayerHealthComp()
 {
@@ -27,7 +28,6 @@ UPlayerHealthComp::UPlayerHealthComp()
 	DefaultHealth = 100;
 	DefaultArmor = 100;
 }
-
 
 // Called when the game starts
 void UPlayerHealthComp::BeginPlay()
@@ -45,7 +45,6 @@ void UPlayerHealthComp::BeginPlay()
 	Health = DefaultHealth;
 	Armor = DefaultArmor;
 }
-
 
 void UPlayerHealthComp::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
@@ -77,14 +76,12 @@ void UPlayerHealthComp::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 		{
 			AMasterPlayerController* KillerPC = Cast<AMasterPlayerController>(InstigatedBy);
 			
-
 			KillerPC->Kills++;
 			KillerPC->Points++;
 			
-
 			GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);
-			UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), InstigatedBy, GetOwner());
 
+			UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), InstigatedBy, GetOwner());
 		}
 	}
 }

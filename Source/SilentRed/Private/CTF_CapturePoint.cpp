@@ -25,7 +25,8 @@ ACTF_CapturePoint::ACTF_CapturePoint()
 	DecalComp->SetupAttachment(RootComponent);
 	DecalComp->SetRelativeRotation(FRotator(90, 0.f, 0.f));//sets the design in the proper spot of the sphere
 	DecalComp->DecalSize = FVector(64, 75, 75);
-	SetReplicates(true);
+	
+	bReplicates = true;
 
 }
 

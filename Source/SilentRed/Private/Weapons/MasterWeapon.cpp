@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SilentRed/Public/Weapons/MasterWeapon.h"
+#include "Weapons/MasterWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "DrawDebugHelpers.h"
@@ -9,10 +9,9 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "TimerManager.h"
-#include "../SilentRed.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "SilentRed/SilentRed.h"
 #include "Net/UnrealNetwork.h"
-
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDbugWeaponDrawing(TEXT("DrawDebugWeapons"),
@@ -20,11 +19,9 @@ FAutoConsoleVariableRef CVARDbugWeaponDrawing(TEXT("DrawDebugWeapons"),
 	TEXT("Draw Debug Lines for weapons"),
 	ECVF_Cheat);
 
-
 // Sets default values
 AMasterWeapon::AMasterWeapon()
 {
-
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	RootComponent = MeshComp;
 
@@ -55,6 +52,23 @@ AMasterWeapon::AMasterWeapon()
 
 }
 
+// Called when the game starts or when spawned
+void AMasterWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	TimeBetweenShots = 60 / WeaponConfig.RateOfFire;
+
+	Ammo = AmmoPerClip;
+}
+
+// Called every frame
+void AMasterWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
 void AMasterWeapon::StartReload(bool bFromReplication /*= false*/)
 {
 
@@ -69,14 +83,14 @@ void AMasterWeapon::StartReload(bool bFromReplication /*= false*/)
 		bPendingReload = true;
 		DeterMineWeaponState();
 
-		
-			if (GetLocalRole() == ROLE_Authority)
-			{
+
+		if (GetLocalRole() == ROLE_Authority)
+		{
 			UE_LOG(LogTemp, Log, TEXT("Reload timer should be called here......"));
 			GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AMasterWeapon::Reload, FMath::Max(0.1f, WeaponConfig.ReloadDuration - 0.1f), false);
-			}
-			UE_LOG(LogTemp, Log, TEXT("STOP  Reload timer should be called here......"));
-			GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AMasterWeapon::StopReload, WeaponConfig.ReloadDuration, false);
+		}
+		UE_LOG(LogTemp, Log, TEXT("STOP  Reload timer should be called here......"));
+		GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AMasterWeapon::StopReload, WeaponConfig.ReloadDuration, false);
 
 	}
 }
@@ -187,17 +201,6 @@ void AMasterWeapon::SetOwningPawn(class ABaseCharacter* NewOwner)
 	}
 }
 
-// Called when the game starts or when spawned
-void AMasterWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-	TimeBetweenShots = 60 / WeaponConfig.RateOfFire;
-
-	Ammo = AmmoPerClip;
-	
-}
-
 void AMasterWeapon::AttachMeshToPawn()
 {
 	if (MyPawn)
@@ -230,7 +233,7 @@ void AMasterWeapon::DetachMeshFromPawn()
 	MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 	MeshComp->AttachToComponent(UsePawnMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, MyPawn->UnEquippedSocket);
 	MeshComp->SetHiddenInGame(false);
-	
+
 
 }
 
@@ -330,8 +333,8 @@ void AMasterWeapon::Fire()
 					QueryParams.bReturnPhysicalMaterial = true;
 
 					FVector TracerEndPoint = TraceEnd;
-
-					EPhysicalSurface SurfaceType = SurfaceType_Default;
+					
+					
 
 					FHitResult Hit;
 
@@ -340,17 +343,17 @@ void AMasterWeapon::Fire()
 					{
 						AActor* HitActor = Hit.GetActor();
 
-						SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+						//EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
 						float ActualDamage = BaseDamage;
-						if (SurfaceType == SURFACE_FLESHVULNERABLE)
+						/*if (SurfaceType == SURFACE_FLESHVULNERABLE)
 						{
 							ActualDamage *= HeadShotBonus;
-						}
+						}*/
 
 						UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-						PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
+						//PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
 
 						TracerEndPoint = Hit.ImpactPoint;
 					}
@@ -365,7 +368,7 @@ void AMasterWeapon::Fire()
 					if (GetLocalRole() == ROLE_Authority)
 					{
 						HitScanTrace.TraceTo = TracerEndPoint;
-						HitScanTrace.SurfaceType = SurfaceType;
+						//HitScanTrace.SurfaceType = SurfaceType;
 					}
 
 					LastFireTime = GetWorld()->TimeSeconds;
@@ -409,17 +412,17 @@ void AMasterWeapon::Fire()
 				{
 					AActor* HitActor = Hit.GetActor();
 
-					SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+					//SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
 					float ActualDamage = BaseDamage;
-					if (SurfaceType == SURFACE_FLESHVULNERABLE)
-					{
-						ActualDamage *= HeadShotBonus;
-					}
+					//if (SurfaceType == SURFACE_FLESHVULNERABLE)
+					//{
+					//	ActualDamage *= HeadShotBonus;
+					//}
 
 					UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-					PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
+					//PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
 
 					TracerEndPoint = Hit.ImpactPoint;
 				}
@@ -434,7 +437,7 @@ void AMasterWeapon::Fire()
 				if (GetLocalRole() == ROLE_Authority)
 				{
 					HitScanTrace.TraceTo = TracerEndPoint;
-					HitScanTrace.SurfaceType = SurfaceType;
+					//HitScanTrace.SurfaceType = SurfaceType;
 				}
 
 				LastFireTime = GetWorld()->TimeSeconds;
@@ -510,13 +513,6 @@ void AMasterWeapon::DeterMineWeaponState()
 	SetWeaponState(NewState);
 }
 
-// Called every frame
-void AMasterWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AMasterWeapon::StartFire()
 {
 	if (isAuto)
@@ -540,8 +536,6 @@ void AMasterWeapon::StopFire()
 
 void AMasterWeapon::ServerReloadGun_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("ServerReload called"));
-
 	StartReload(true);
 }
 
@@ -594,7 +588,7 @@ bool AMasterWeapon::ServerFire_Validate()
 void AMasterWeapon::OnRep_HitScanTrace()
 {
 	PlayFireEffects(HitScanTrace.TraceTo);
-	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
+	//PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
 }
 
 void AMasterWeapon::OnRep_Reload()

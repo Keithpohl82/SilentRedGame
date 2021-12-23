@@ -38,7 +38,7 @@ public:
 
 	
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetTeamNum(int32 NewTeamNumber);
 
 	UFUNCTION()

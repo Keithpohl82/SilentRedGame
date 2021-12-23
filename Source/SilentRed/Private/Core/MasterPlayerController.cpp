@@ -6,10 +6,18 @@
 #include "SilentRed/Public/Core/BasePlayerState.h"
 #include "SilentRed/Public/Core/MasterGameState.h"
 #include "Online.h"
+#include "Interfaces/OnlineAchievementsInterface.h"
 #include "Interfaces/OnlineEventsInterface.h"
+#include "Interfaces/OnlineStatsInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "Steam/isteamuserstats.h"
 #include "Engine/World.h"
 #include "Engine/DemoNetDriver.h"
 #include "Net/UnrealNetwork.h"
+#include "OnlineSubsystemUtils.h"
+
+
 
 
 AMasterPlayerController::AMasterPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -37,7 +45,7 @@ void AMasterPlayerController::RestartRecording()
 {
 	if (UWorld* World = GetWorld())
 	{
-		if (UDemoNetDriver* DemoDriver = World->DemoNetDriver)
+		if (UDemoNetDriver* DemoDriver = GetWorld()->GetDemoNetDriver())
 		{
 			DemoDriver->GotoTimeInSeconds(0.0f);
 		}
@@ -50,7 +58,6 @@ void AMasterPlayerController::RestartRecording()
 void AMasterPlayerController::OnKill()
 {
 	AMasterGameState* GS = Cast<AMasterGameState>(GetWorld()->GetGameState());
-	
 }
 
 
@@ -58,6 +65,14 @@ void AMasterPlayerController::OnKill()
 float AMasterPlayerController::GetKDA()
 {
 	return Kills / Deaths;
+}
+
+void AMasterPlayerController::SetTestStats()
+{
+	
+	SteamUserStats()->RequestCurrentStats();
+
+	//SteamUserStats()->SetStat(KILLS_TOTAL, KillsTotal);
 }
 
 void AMasterPlayerController::ClientGameStarted_Implementation()
@@ -76,6 +91,21 @@ void AMasterPlayerController::ClientGameStarted_Implementation()
 }
 
 
+
+void AMasterPlayerController::ResetGameStats()
+{
+	SteamUserStats()->ResetAllStats(true);
+	SteamUserStats()->RequestCurrentStats();
+}
+
+void AMasterPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction("PushToTalk", IE_Pressed, this, &APlayerController::StartTalking);
+	InputComponent->BindAction("PushToTalk", IE_Released, this, &APlayerController::StopTalking);
+	InputComponent->BindAction("ResetStats", IE_Pressed, this, &AMasterPlayerController::ResetGameStats);
+}
 
 void AMasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

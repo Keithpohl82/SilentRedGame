@@ -5,7 +5,7 @@
 #include "SilentRed/SilentRed.h"
 #include "Engine/GameInstance.h"
 #include "SilentRed/Public/MenuSystem/MainMenuInterface.h"
-
+#include "NetworkReplayStreaming.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Engine/NetworkDelegates.h"
@@ -14,6 +14,7 @@
 
 class UMainMenu;
 class UUserWidget;
+class ISteamMatchmaking;
 
 //Demo and Replay system gos in here.
 
@@ -48,6 +49,16 @@ public:
 	UFUNCTION(Exec)
 	void JoinServer(uint32 Index) override;
 
+	UFUNCTION(BlueprintCallable)
+	bool InvitePlayerToLobby(FString PlayerToInvite);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateGameLobby();
+
+	FString LobbyName;
+
+	
+
 	//UFUNCTION()
 	//void JoinServerIndex(uint32 Index) override;
 
@@ -61,6 +72,8 @@ public:
 	TArray<FString> MapsList;
 
 
+	UPROPERTY(BlueprintReadWrite, Category = Sessions)
+	bool bIsALanMatch;
 
 	//////////////    Replay system   //////////////
 	UPROPERTY(EditDefaultsOnly, Category = Replays)
@@ -68,12 +81,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = Replays)
 	FString FriendlyRecordingName;
 	UFUNCTION(BlueprintCallable, Category = Replays)
-	void StartRecording();
+	void StartRecording(const FString& InName, const FString& FriendlyName);
 	UFUNCTION(BlueprintCallable, Category = Replays)
 	void StopRecording();
 	UFUNCTION(BlueprintCallable, Category = Replays)
 	void StartReplay();
 	//////////////    End Replay system   //////////////
+
+	protected:
+
+
+	FString GetIPAddress();
 
 
 private:
@@ -87,18 +105,14 @@ private:
 
 	IOnlineSessionPtr SessionInterface;
 
-
+	UPROPERTY(Config)
 	FString DesiredServerName;
+
 	void CreateSession();
 
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
-	
-
-	
-
 
 };

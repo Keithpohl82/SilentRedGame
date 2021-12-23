@@ -3,16 +3,23 @@
 
 #include "SilentRed/Public/Core/BaseGameInstance.h"
 #include "SilentRed/Public/Characters/BaseCharacter.h"
-#include "Misc/DateTime.h"
+#include "SilentRed/Public/MenuSystem/MainMenu.h"
+#include "SilentRed/Public/MenuSystem/MenuWidget.h"
 #include "Engine/Engine.h"
+
+#include "Misc/DateTime.h"
 #include "DrawDebugHelpers.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-#include "SilentRed/Public/MenuSystem/MainMenu.h"
-#include "SilentRed/Public/MenuSystem/MenuWidget.h"
-#include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "TimerManager.h"
+#include "Engine/DemoNetDriver.h"
+#include "Kismet/GameplayStatics.h"
 
+#include "steam/isteammatchmaking.h"
+#include "steam/isteamnetworking.h"
+#include "steam/steam_api.h"
+#include "steam/isteamuserstats.h"
 
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("Server Name");
@@ -21,7 +28,15 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("Server Name");
 
 UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 {
+	
+	bool bRet = SteamAPI_Init();
 
+	if (bRet)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Steam API was Initialilzed"));
+
+	}
+	
 	ConstructorHelpers::FClassFinder<UUserWidget>MenuBPClass(TEXT("/Game/UI/MenuSystem/BP_MainMenu"));
 	if(!ensure(MenuBPClass.Class != nullptr)) return;
 	MenuClass = MenuBPClass.Class;
@@ -32,6 +47,7 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 
 	RecordingName = FDateTime::Now().ToString();
 	FriendlyRecordingName = "MyReplay";
+
 }
 
 void UBaseGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
@@ -65,7 +81,7 @@ void UBaseGameInstance::Init()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *Subsystem->GetSubsystemName().ToString());
 		SessionInterface = Subsystem->GetSessionInterface();
-
+		
 		if (SessionInterface.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Found Subsystem Interface"));
@@ -74,6 +90,7 @@ void UBaseGameInstance::Init()
 			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UBaseGameInstance::OnDestroySessionComplete);
 			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UBaseGameInstance::OnFindSessionsComplete);
 			SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UBaseGameInstance::OnJoinSessionComplete);
+			
 		}
 	}
 	else
@@ -150,14 +167,39 @@ void UBaseGameInstance::JoinServer(uint32 Index)
 }
 
 
+bool UBaseGameInstance::InvitePlayerToLobby(FString PlayerToInvite)
+{
+	bool InviteUserToLobby(CSteamID steamIDLobby, CSteamID steamIDInvitee);
+	
+	return true;
+}
+
+void UBaseGameInstance::CreateGameLobby()
+{
+	SteamAPICall_t CreateLobby(k_ELobbyTypePublic);
+
+	if (k_EResultOK)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Lobby was created"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FAILED to create lobby"));
+	}
+}
+
 void UBaseGameInstance::RefreshServerList()
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid())
 	{
+		FOnlineSessionSettings SessionSettings;
 
 		SessionSearch->MaxSearchResults = 1000;
+		
+		
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+		
 		UE_LOG(LogTemp, Warning, TEXT("Starting To Find Sessions"));
 		SessionSearch->bIsLanQuery = true;
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
@@ -173,14 +215,18 @@ void UBaseGameInstance::BackToMainMenu()
 	PlayerController->ClientTravel("/Game/Maps/MainMenuLevel", ETravelType::TRAVEL_Absolute);
 }
 
-void UBaseGameInstance::StartRecording()
+void UBaseGameInstance::StartRecording(const FString& InName, const FString& FriendlyName)
 {
+	RecordingName = GetWorld()->GetMapName() + FriendlyRecordingName;
+
 	StartRecordingReplay(RecordingName,	FriendlyRecordingName);
+	UE_LOG(LogTemp, Warning, TEXT("Starting to record your demo"));
 }
 
 void UBaseGameInstance::StopRecording()
 {
 	StopRecordingReplay();
+	UE_LOG(LogTemp, Warning, TEXT("Stopped recording your demo"));
 }
 
 void UBaseGameInstance::StartReplay()
@@ -188,10 +234,18 @@ void UBaseGameInstance::StartReplay()
 	PlayReplay(RecordingName, nullptr);
 }
 
+
+FString UBaseGameInstance::GetIPAddress()
+{
+	return GetWorld()->GetAddressURL();
+}
+
 void UBaseGameInstance::CreateSession()
 {
 	if (SessionInterface.IsValid())
 	{
+
+		
 		FOnlineSessionSettings SessionSettings;
 		if (IOnlineSubsystem::Get()->GetSubsystemName() == NULL_SUBSYSTEM)
 		{
@@ -202,12 +256,14 @@ void UBaseGameInstance::CreateSession()
 			SessionSettings.bIsLANMatch = false;
 		}
 
-		
-		SessionSettings.bAllowJoinInProgress =true;
+		SessionSettings.bIsLANMatch = bIsALanMatch;
+		SessionSettings.bAllowJoinViaPresence = true;
+		SessionSettings.bAllowJoinInProgress = true;
 		SessionSettings.NumPublicConnections = MaxNumberOfPlayers;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence =true;
 		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		
 
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 
@@ -218,6 +274,12 @@ void UBaseGameInstance::CreateSession()
 
 void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 {
+
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not create session"));
+	}
+
 	if (_Menu != nullptr)
 	{
 		_Menu->Teardown();
@@ -233,7 +295,9 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	if (!ensure(World != nullptr)) return;
 
 
-	World->ServerTravel("/Game/Maps/JordanBlock");
+	World->ServerTravel("/Game/Maps/JordanBlock?listen");
+
+
 }
 
 void UBaseGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
@@ -268,6 +332,7 @@ void UBaseGameInstance::OnFindSessionsComplete(bool Success)
 			Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 			Data.HostUser = SearchResult.Session.OwningUserName;
 			Data.ServerPing = SearchResult.PingInMs;
+			
 
 			FString ServerName;
 			if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))

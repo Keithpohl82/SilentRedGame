@@ -12,7 +12,7 @@
 ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	
-
+	TeamNumber = 0;
 	PlayerPing = GetPing();
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();

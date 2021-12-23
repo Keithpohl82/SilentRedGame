@@ -31,6 +31,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetKDA();
 
+	TSharedPtr<const FUniqueNetId> UniqueNetID;
+
+	UFUNCTION(BlueprintCallable, Category = stats)
+	void SetTestStats();
+
 protected:
 
 	/** if set, gameplay related actions (movement, weapn usage, etc) are allowed */
@@ -60,6 +65,11 @@ public:
 	/** notify player about started match */
 	UFUNCTION(reliable, client)
 	void ClientGameStarted();
+
+	//Reset stats for testing
+	void ResetGameStats();
+
+	virtual void SetupInputComponent() override;
 
 
 

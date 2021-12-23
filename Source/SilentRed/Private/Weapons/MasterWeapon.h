@@ -3,16 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Curves/CurveFloat.h"
 #include "GameFramework/Actor.h"
+#include "Curves/CurveFloat.h"
 #include "MasterWeapon.generated.h"
 
 class USkeletalMeshComponent;
 class UCurveFloat;
 class UDamageType;
 class UParticleSystem;
-class ABaseCharacter;
-
 
 namespace EWeaponState
 {
@@ -30,26 +28,26 @@ struct FWeaponData
 {
 	GENERATED_BODY()
 
-	//Time between shots for Rate of fire
-	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	float TimeBetweenShots;
+		//Time between shots for Rate of fire
+		UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
+		float TimeBetweenShots;
 
 	//Timer for reloading weapon 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	float ReloadDuration;
+		float ReloadDuration;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	float RecoilTimeBetweenShots;
+		float RecoilTimeBetweenShots;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	float BulletEndPoint;
+		float BulletEndPoint;
 
 	// Bullets fired per minuet
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	float RateOfFire;
+		float RateOfFire;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-	int32 ShotgunPellets;
+		int32 ShotgunPellets;
 
 
 	//SetsDefaults
@@ -72,21 +70,20 @@ struct FHitScanTrace
 
 public:
 
-	UPROPERTY()
-	TEnumAsByte<EPhysicalSurface> SurfaceType;
+	//UPROPERTY()
+	//TEnumAsByte<EPhysicalSurface> SurfaceType;
 
 	UPROPERTY()
 	FVector_NetQuantize TraceTo;
 };
 
-
 UCLASS()
-class SILENTRED_API AMasterWeapon : public AActor
+class AMasterWeapon : public AActor
 {
 	GENERATED_BODY()
 
-	/* Current Weapon State */
-	EWeaponState::Type CurrentState;
+		/* Current Weapon State */
+		EWeaponState::Type CurrentState;
 
 	/** pawn owner */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_MyPawn)
@@ -96,7 +93,7 @@ class SILENTRED_API AMasterWeapon : public AActor
 	void OnRep_MyPawn();
 
 	/* [local + server] interrupt weapon reload */
-	virtual void StopReload();
+	 void StopReload();
 
 	/* Updates the weapon's state */
 	void SetWeaponState(EWeaponState::Type NewState);
@@ -109,14 +106,13 @@ class SILENTRED_API AMasterWeapon : public AActor
 
 	/* Determines if 3rd person or 1st person mesh to spawn */
 	USkeletalMeshComponent* GetWeaponMesh() const;
-
 	
-public:	
+public:
 	// Sets default values for this actor's properties
 	AMasterWeapon();
 
 	/* [all] start weapon reload */
-	virtual void StartReload(bool bFromReplication = false);
+	 void StartReload(bool bFromReplication = false);
 
 	/* Current total ammo */
 	UPROPERTY(transient, Replicated)
@@ -147,19 +143,19 @@ public:
 	//Inventory
 
 	/** weapon is being equipped by owner pawn */
-	virtual void OnEquip(const AMasterWeapon* LastWeapon);
+	 void OnEquip(const AMasterWeapon* LastWeapon);
 
 	/** weapon is now equipped by owner pawn */
-	virtual void OnEquipFinished();
+	void OnEquipFinished();
 
 	/** weapon is holstered by owner pawn */
-	virtual void OnUnEquip();
+	 void OnUnEquip();
 
 	/** [server] weapon was added to pawn's inventory */
-	virtual void OnEnterInventory(class ABaseCharacter* NewOwner);
+	 void OnEnterInventory(class ABaseCharacter* NewOwner);
 
 	/** [server] weapon was removed from pawn's inventory */
-	virtual void OnLeaveInventory();
+	 void OnLeaveInventory();
 
 	/** check if it's currently equipped */
 	bool IsEquipped() const;
@@ -170,11 +166,8 @@ public:
 	/* Getter for the current weapon state */
 	EWeaponState::Type GetCurrentState() const;
 
-
-
 	/* Sets who the owner of the weapon is */
 	void SetOwningPawn(class ABaseCharacter* ABaseCharacter);
-
 
 protected:
 	// Called when the game starts or when spawned
@@ -193,7 +186,7 @@ protected:
 
 	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
 
-	virtual void Fire();
+	void Fire();
 
 	void Recoil();
 
@@ -209,29 +202,29 @@ protected:
 	float RecoilTimePerShot;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-	FName EjectSocketName;
+		FName EjectSocketName;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-	FName MuzzleSocketName;
+		FName MuzzleSocketName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Effects")
-	FName TracerTargetName;
+		FName TracerTargetName;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-	UParticleSystem* MuzzleEffect;
+		UParticleSystem* MuzzleEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-	UParticleSystem* EjectEffect;
+		UParticleSystem* EjectEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-	UParticleSystem* DefaultImpactEffect;
+		UParticleSystem* DefaultImpactEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-	UParticleSystem* FleshImpactEffect;
+		UParticleSystem* FleshImpactEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Effects")
-	UParticleSystem* TracerEffect;
+		UParticleSystem* TracerEffect;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-	USoundBase* MuzzleSound;
+		USoundBase* MuzzleSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-	USoundBase* ImpactSound;
+		USoundBase* ImpactSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-	USoundBase* ReloadSound;
+		USoundBase* ReloadSound;
 	UPROPERTY(EditAnywhere, Category = "Weapon Sounds")
-	USoundBase* OutOfAmmoSound;
+		USoundBase* OutOfAmmoSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DamageType;
@@ -241,18 +234,18 @@ protected:
 	float HeadShotBonus;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-	UCurveFloat* VerticalRecoil;
+		UCurveFloat* VerticalRecoil;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-	UCurveFloat* HorizontalRecoil;
+		UCurveFloat* HorizontalRecoil;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-	float RecoilRecoveryTime;
+		float RecoilRecoveryTime;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-	float RecoilRecoveryDelay;
+		float RecoilRecoveryDelay;
 	UPROPERTY(EditDefaultsOnly, Category = "Recoil")
-	float RecoilMultiplyer;
+		float RecoilMultiplyer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
-	bool isAuto;
+		bool isAuto;
 
 
 
@@ -285,7 +278,7 @@ protected:
 
 	/*is weapon reloading? ;*/
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_Reload)
-		uint32 bPendingReload : 1;
+	uint32 bPendingReload : 1;
 
 
 	/* When the Weapon was switched to*/
@@ -312,7 +305,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerReloadGun();
 
-	virtual void Reload();
+	void ServerReloadGun_Implementation();
+
+	void Reload();
 
 	UFUNCTION(BlueprintPure)
 	int GetAmmo();
@@ -322,6 +317,8 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerFire();
+
+	void ServerFire_Implementation();
 
 	UFUNCTION()
 	void OnRep_HitScanTrace();
