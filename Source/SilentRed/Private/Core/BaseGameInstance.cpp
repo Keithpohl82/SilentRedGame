@@ -17,6 +17,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "steam/isteammatchmaking.h"
+#include "steam/isteamfriends.h"
 #include "steam/isteamnetworking.h"
 #include "steam/steam_api.h"
 #include "steam/isteamuserstats.h"
@@ -176,6 +177,7 @@ bool UBaseGameInstance::InvitePlayerToLobby(FString PlayerToInvite)
 
 void UBaseGameInstance::CreateGameLobby()
 {
+	
 	SteamAPICall_t CreateLobby(k_ELobbyTypePublic);
 
 	if (k_EResultOK)
@@ -186,6 +188,16 @@ void UBaseGameInstance::CreateGameLobby()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FAILED to create lobby"));
 	}
+}
+
+
+
+void UBaseGameInstance::GetListOfLobbies()
+{
+	SteamMatchmaking()->AddRequestLobbyListResultCountFilter(10);
+
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
+	m_CallResultLobbyMatchList.Set(hSteamAPICall, this, &UBaseGameInstance::OnSearchLobbyComplete);
 }
 
 void UBaseGameInstance::RefreshServerList()
@@ -234,10 +246,28 @@ void UBaseGameInstance::StartReplay()
 	PlayReplay(RecordingName, nullptr);
 }
 
-
 FString UBaseGameInstance::GetIPAddress()
 {
 	return GetWorld()->GetAddressURL();
+}
+
+
+
+void UBaseGameInstance::OnSearchLobbyComplete( LobbyMatchList_t	*pLobbyMatchList, bool bIOFailure)
+{
+	if (bIOFailure)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to retrive list of lobbies!!"));
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"));
+	
+	
+	/*for (var i = pLobbyMatchList; i = 0 ; pLobbyMatchList < pLobbyMatchList)
+	{
+		SteamMatchmaking()->GetLobbyByIndex();
+		UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"), pLobbyMatchList);
+	}*/
 }
 
 void UBaseGameInstance::CreateSession()

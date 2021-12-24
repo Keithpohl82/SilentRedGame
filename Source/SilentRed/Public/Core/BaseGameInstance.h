@@ -9,6 +9,8 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Engine/NetworkDelegates.h"
+#include "Steam/steam_api.h"
+
 #include "BaseGameInstance.generated.h"
 
 
@@ -18,9 +20,8 @@ class ISteamMatchmaking;
 
 //Demo and Replay system gos in here.
 
-/**
- * 
- */
+
+
 UCLASS(Config=Game)
 class UBaseGameInstance : public UGameInstance, public IMainMenuInterface
 {
@@ -57,6 +58,9 @@ public:
 
 	FString LobbyName;
 
+	// Uses OnSearchLobbyComplete Call Return.
+	UFUNCTION(BlueprintCallable)
+	void GetListOfLobbies();
 	
 
 	//UFUNCTION()
@@ -97,6 +101,9 @@ public:
 private:
 
 	class UMainMenu* _Menu;
+	
+	void OnSearchLobbyComplete(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
+	CCallResult< UBaseGameInstance, LobbyMatchList_t > m_CallResultLobbyMatchList;
 
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> InGameMenuClass;
