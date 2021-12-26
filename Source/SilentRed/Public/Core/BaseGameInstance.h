@@ -38,21 +38,35 @@ public:
 
 	virtual void Init();
 
+	// For logging in a player to the EOS Subsystem
+	void Login();
+
+	// Callback for when player login is completed
+	void OnLoginComplete(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	bool bIsLoggedIn;
+
+	// Loads the main menu when finished initalizing
 	UFUNCTION(BlueprintCallable)
 	void LoadMainMenu();
 
+	// Loads the In game/ Match menu
 	UFUNCTION(BlueprintCallable)
 	void InGameLoadMainMenu();
 
+	// For hosing a server on a PC
 	UFUNCTION(Exec)
 	void HostServer(FString ServerName) override;
 
+	// Join the selected server
 	UFUNCTION(Exec)
 	void JoinServer(uint32 Index) override;
 
+	// Invites a selected player from your friends list to lobby/party
 	UFUNCTION(BlueprintCallable)
 	bool InvitePlayerToLobby(FString PlayerToInvite);
 
+	// Creates a lobby for other players to join
 	UFUNCTION(BlueprintCallable)
 	void CreateGameLobby();
 
@@ -62,6 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetListOfLobbies();
 	
+	CCallResult< UBaseGameInstance, LobbyMatchList_t > m_CallResultLobbyMatchList;
 
 	//UFUNCTION()
 	//void JoinServerIndex(uint32 Index) override;
@@ -69,8 +84,10 @@ public:
 	UPROPERTY(Config)
 	int32 MaxNumberOfPlayers;
 
+	// Refreshed the list of server that are avalible to join
 	void RefreshServerList() override;
 
+	// Called to take a player back to the main menu from the game or other menu
 	virtual void BackToMainMenu() override;
 
 	TArray<FString> MapsList;
@@ -94,16 +111,19 @@ public:
 
 	protected:
 
-
+	// Gets the IP address of the server. For connecting from the console
 	FString GetIPAddress();
+
+	IOnlineSubsystem* Subsystem;
 
 
 private:
 
 	class UMainMenu* _Menu;
 	
+	// Call back for when finished searching for lobbies to join.
 	void OnSearchLobbyComplete(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
-	CCallResult< UBaseGameInstance, LobbyMatchList_t > m_CallResultLobbyMatchList;
+	
 
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> InGameMenuClass;

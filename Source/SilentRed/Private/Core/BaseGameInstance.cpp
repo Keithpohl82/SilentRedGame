@@ -7,6 +7,8 @@
 #include "SilentRed/Public/MenuSystem/MenuWidget.h"
 #include "Engine/Engine.h"
 
+#include "Interfaces/OnlineIdentityInterface.h"
+
 #include "Misc/DateTime.h"
 #include "DrawDebugHelpers.h"
 #include "UObject/ConstructorHelpers.h"
@@ -49,6 +51,8 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 	RecordingName = FDateTime::Now().ToString();
 	FriendlyRecordingName = "MyReplay";
 
+	bIsLoggedIn = false;
+
 }
 
 void UBaseGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
@@ -77,7 +81,8 @@ void UBaseGameInstance::RemoveSplitScreenPlayers()
 
 void UBaseGameInstance::Init()
 {
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	Subsystem = IOnlineSubsystem::Get();
+
 	if (Subsystem != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *Subsystem->GetSubsystemName().ToString());
@@ -100,6 +105,39 @@ void UBaseGameInstance::Init()
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Found Class %s"), *MenuClass->GetName());
 
+	Login();
+}
+
+void UBaseGameInstance::Login()
+{
+	if (Subsystem)
+	{
+		if (IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface())
+		{
+			FOnlineAccountCredentials Credentials;
+
+			Credentials.Id = FString();
+			Credentials.Token = FString();
+			Credentials.Type = FString("accountportal");
+
+			Identity->OnLoginCompleteDelegates->AddUObject(this, &UBaseGameInstance::OnLoginComplete);
+			Identity->Login(0, Credentials);
+		}
+	}
+}
+
+void UBaseGameInstance::OnLoginComplete(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+{
+	UE_LOG(LogTemp, Warning, TEXT("LoggedIn: %d"), bWasSuccessful);
+	bIsLoggedIn = bWasSuccessful;
+	
+	if (Subsystem)
+	{
+		if (IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface())
+		{
+			Identity->ClearOnLoginCompleteDelegates(0, this);
+		}
+	}
 }
 
 void UBaseGameInstance::LoadMainMenu()
@@ -198,6 +236,7 @@ void UBaseGameInstance::GetListOfLobbies()
 
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
 	m_CallResultLobbyMatchList.Set(hSteamAPICall, this, &UBaseGameInstance::OnSearchLobbyComplete);
+	
 }
 
 void UBaseGameInstance::RefreshServerList()
@@ -262,43 +301,56 @@ void UBaseGameInstance::OnSearchLobbyComplete( LobbyMatchList_t	*pLobbyMatchList
 
 	UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"));
 	
-	
-	/*for (var i = pLobbyMatchList; i = 0 ; pLobbyMatchList < pLobbyMatchList)
+	//int IndexOfLobby;
+
+	/*for (var i = pLobbyMatchList; i = 0 ; IndexOfLobby < LobbyMatchList_t.m_nLobbiesMatching)
 	{
-		SteamMatchmaking()->GetLobbyByIndex();
+		
+		SteamMatchmaking()->GetLobbyByIndex(IndexOfLobby);
 		UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"), pLobbyMatchList);
 	}*/
 }
 
 void UBaseGameInstance::CreateSession()
 {
-	if (SessionInterface.IsValid())
+	if (bIsLoggedIn)
 	{
+	
+		if (SessionInterface.IsValid())
+		{
 
 		
-		FOnlineSessionSettings SessionSettings;
-		if (IOnlineSubsystem::Get()->GetSubsystemName() == NULL_SUBSYSTEM)
-		{
-			SessionSettings.bIsLANMatch = true;
-		}
-		else
-		{
-			SessionSettings.bIsLANMatch = false;
-		}
+			FOnlineSessionSettings SessionSettings;
+			if (IOnlineSubsystem::Get()->GetSubsystemName() == NULL_SUBSYSTEM)
+			{
+				SessionSettings.bIsLANMatch = true;
+			}
+			else
+			{
+				SessionSettings.bIsLANMatch = false;
+			}
 
-		SessionSettings.bIsLANMatch = bIsALanMatch;
-		SessionSettings.bAllowJoinViaPresence = true;
-		SessionSettings.bAllowJoinInProgress = true;
-		SessionSettings.NumPublicConnections = MaxNumberOfPlayers;
-		SessionSettings.bShouldAdvertise = true;
-		SessionSettings.bUsesPresence =true;
-		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+			SessionSettings.bIsDedicated = false;
+			SessionSettings.bIsLANMatch = bIsALanMatch;
+			SessionSettings.bAllowJoinViaPresence = true;
+			SessionSettings.bAllowJoinInProgress = true;
+			SessionSettings.NumPublicConnections = MaxNumberOfPlayers;
+			SessionSettings.bShouldAdvertise = true;
+			SessionSettings.bUsesPresence =true;
+			SessionSettings.bUseLobbiesIfAvailable = true;
+			SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 		
 
-		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+			SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 
-		// FOR TESTING DEDICATED SERVER
-		UE_LOG(LogTemp, Warning, TEXT("Create Session was called"));
+			// FOR TESTING DEDICATED SERVER
+			UE_LOG(LogTemp, Warning, TEXT("Create Session was called"));
+		}
+	}
+
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("You must be logged in to create a session"));
 	}
 }
 
