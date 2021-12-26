@@ -34,6 +34,8 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 	
 	bool bRet = SteamAPI_Init();
 
+	
+
 	if (bRet)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Steam API was Initialilzed"));

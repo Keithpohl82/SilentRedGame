@@ -91,6 +91,10 @@
 			"SupportedTargetPlatforms": [
 				"Android"
 			]
+		},
+		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": false
 		}
 	]
 }

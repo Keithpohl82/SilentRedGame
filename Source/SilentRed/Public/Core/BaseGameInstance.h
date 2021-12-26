@@ -114,7 +114,7 @@ public:
 	// Gets the IP address of the server. For connecting from the console
 	FString GetIPAddress();
 
-	IOnlineSubsystem* Subsystem;
+	class IOnlineSubsystem* Subsystem;
 
 
 private:
