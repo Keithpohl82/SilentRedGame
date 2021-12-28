@@ -15,6 +15,8 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnOb(TEXT("/Game/Characters/BP_TestPlayer"));
 	DefaultPawnClass = PlayerPawnOb.Class;
 
+	
+
 	NumTeams = 2;
 	bDelayedStart = true;
 

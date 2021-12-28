@@ -8,6 +8,7 @@
 #include "Engine/Engine.h"
 
 #include "Interfaces/OnlineIdentityInterface.h"
+#include <list>
 
 #include "Misc/DateTime.h"
 #include "DrawDebugHelpers.h"
@@ -24,6 +25,8 @@
 #include "steam/steam_api.h"
 #include "steam/isteamuserstats.h"
 
+
+
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("Server Name");
 
@@ -33,9 +36,7 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 {
 	
 	bool bRet = SteamAPI_Init();
-
 	
-
 	if (bRet)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Steam API was Initialilzed"));
@@ -55,6 +56,11 @@ UBaseGameInstance::UBaseGameInstance(const FObjectInitializer& ObjectInitalizer)
 
 	bIsLoggedIn = false;
 
+}
+
+void UBaseGameInstance::CreateSteamLobby()
+{
+	SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 4);
 }
 
 void UBaseGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
@@ -108,6 +114,7 @@ void UBaseGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Found Class %s"), *MenuClass->GetName());
 
 	Login();
+	
 }
 
 void UBaseGameInstance::Login()
@@ -141,6 +148,8 @@ void UBaseGameInstance::OnLoginComplete(int32 LocalUserNum, bool bWasSuccessful,
 		}
 	}
 }
+
+
 
 void UBaseGameInstance::LoadMainMenu()
 {
@@ -207,40 +216,6 @@ void UBaseGameInstance::JoinServer(uint32 Index)
 	
 }
 
-
-bool UBaseGameInstance::InvitePlayerToLobby(FString PlayerToInvite)
-{
-	bool InviteUserToLobby(CSteamID steamIDLobby, CSteamID steamIDInvitee);
-	
-	return true;
-}
-
-void UBaseGameInstance::CreateGameLobby()
-{
-	
-	SteamAPICall_t CreateLobby(k_ELobbyTypePublic);
-
-	if (k_EResultOK)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Lobby was created"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("FAILED to create lobby"));
-	}
-}
-
-
-
-void UBaseGameInstance::GetListOfLobbies()
-{
-	SteamMatchmaking()->AddRequestLobbyListResultCountFilter(10);
-
-	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
-	m_CallResultLobbyMatchList.Set(hSteamAPICall, this, &UBaseGameInstance::OnSearchLobbyComplete);
-	
-}
-
 void UBaseGameInstance::RefreshServerList()
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
@@ -254,7 +229,7 @@ void UBaseGameInstance::RefreshServerList()
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Starting To Find Sessions"));
-		SessionSearch->bIsLanQuery = true;
+		SessionSearch->bIsLanQuery = false;
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
 
@@ -292,36 +267,12 @@ FString UBaseGameInstance::GetIPAddress()
 	return GetWorld()->GetAddressURL();
 }
 
-
-
-void UBaseGameInstance::OnSearchLobbyComplete( LobbyMatchList_t	*pLobbyMatchList, bool bIOFailure)
-{
-	if (bIOFailure)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to retrive list of lobbies!!"));
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"));
-	
-	//int IndexOfLobby;
-
-	/*for (var i = pLobbyMatchList; i = 0 ; IndexOfLobby < LobbyMatchList_t.m_nLobbiesMatching)
-	{
-		
-		SteamMatchmaking()->GetLobbyByIndex(IndexOfLobby);
-		UE_LOG(LogTemp, Warning, TEXT("Lobby ID is %i"), pLobbyMatchList);
-	}*/
-}
-
 void UBaseGameInstance::CreateSession()
 {
 	if (bIsLoggedIn)
 	{
-	
 		if (SessionInterface.IsValid())
 		{
-
-		
 			FOnlineSessionSettings SessionSettings;
 			if (IOnlineSubsystem::Get()->GetSubsystemName() == NULL_SUBSYSTEM)
 			{
@@ -340,9 +291,9 @@ void UBaseGameInstance::CreateSession()
 			SessionSettings.bShouldAdvertise = true;
 			SessionSettings.bUsesPresence =true;
 			SessionSettings.bUseLobbiesIfAvailable = true;
-			SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+			SessionSettings.bUseLobbiesVoiceChatIfAvailable = true;
+			SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineService);
 		
-
 			SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 
 			// FOR TESTING DEDICATED SERVER
@@ -378,9 +329,7 @@ void UBaseGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	UWorld* World = GetWorld();
 	if (!ensure(World != nullptr)) return;
 
-
 	World->ServerTravel("/Game/Maps/JordanBlock?listen");
-
 
 }
 
@@ -396,10 +345,8 @@ void UBaseGameInstance::OnFindSessionsComplete(bool Success)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Finished Finding Sessions"));
 
-	
 	if (Success && SessionSearch.IsValid() && _Menu != nullptr)
 	{
-
 		TArray<FServerData> ServerNames;
 
 		//ServerNames.Add("Test Server 1");
@@ -416,7 +363,6 @@ void UBaseGameInstance::OnFindSessionsComplete(bool Success)
 			Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 			Data.HostUser = SearchResult.Session.OwningUserName;
 			Data.ServerPing = SearchResult.PingInMs;
-			
 
 			FString ServerName;
 			if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
@@ -455,5 +401,4 @@ void UBaseGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionC
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }
-
 

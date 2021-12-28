@@ -48,6 +48,7 @@ int32 ABasePlayerState::GetTeamNumber() const
 void ABasePlayerState::ShotFired()
 {
 	NumShotsFired += 1;
+	UE_LOG(LogTemp, Warning, TEXT("ShotFired from player state."))
 }
 
 

@@ -141,7 +141,7 @@ void UMainMenu::OpenMultiPlayerMenu()
 	MenuSwitcher->SetActiveWidget(MultiPlayer);
 	if (MenuInterface != nullptr)
 	{
-		MenuInterface->RefreshServerList();
+		//MenuInterface->RefreshServerList();
 	}
 }
 

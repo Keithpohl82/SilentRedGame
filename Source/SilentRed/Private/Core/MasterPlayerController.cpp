@@ -82,12 +82,10 @@ void AMasterPlayerController::ClientGameStarted_Implementation()
 	// Enable controls mode now the game has started
 	SetIgnoreMoveInput(false);
 
-	
 	bGameEndedFrame = false;
 
 	bHasSentStartEvents = true;
 		
-	
 }
 
 

@@ -12,6 +12,8 @@
 #include "SilentRed/SilentRed.h"
 #include "Net/UnrealNetwork.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "SilentRed/Public/Core/BasePlayerState.h"
+#include "SilentRed/Public/Core/MasterPlayerController.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDbugWeaponDrawing(TEXT("DrawDebugWeapons"),
@@ -301,7 +303,7 @@ void AMasterWeapon::Fire()
 
 	if (Ammo > 0)
 	{
-
+		
 		if (bIsShotGun)
 		{
 			for (int32 i = 0; i < WeaponConfig.ShotgunPellets; i++)

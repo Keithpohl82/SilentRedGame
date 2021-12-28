@@ -10,6 +10,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Engine/NetworkDelegates.h"
 #include "Steam/steam_api.h"
+#include <list>
 
 #include "BaseGameInstance.generated.h"
 
@@ -18,9 +19,8 @@ class UMainMenu;
 class UUserWidget;
 class ISteamMatchmaking;
 
+
 //Demo and Replay system gos in here.
-
-
 
 UCLASS(Config=Game)
 class UBaseGameInstance : public UGameInstance, public IMainMenuInterface
@@ -31,6 +31,10 @@ public:
 	UBaseGameInstance(const FObjectInitializer& ObjectInitalizer);
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+	void CreateSteamLobby();
+	
 
 	void RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer);
 
@@ -62,22 +66,6 @@ public:
 	UFUNCTION(Exec)
 	void JoinServer(uint32 Index) override;
 
-	// Invites a selected player from your friends list to lobby/party
-	UFUNCTION(BlueprintCallable)
-	bool InvitePlayerToLobby(FString PlayerToInvite);
-
-	// Creates a lobby for other players to join
-	UFUNCTION(BlueprintCallable)
-	void CreateGameLobby();
-
-	FString LobbyName;
-
-	// Uses OnSearchLobbyComplete Call Return.
-	UFUNCTION(BlueprintCallable)
-	void GetListOfLobbies();
-	
-	CCallResult< UBaseGameInstance, LobbyMatchList_t > m_CallResultLobbyMatchList;
-
 	//UFUNCTION()
 	//void JoinServerIndex(uint32 Index) override;
 
@@ -108,22 +96,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Replays)
 	void StartReplay();
 	//////////////    End Replay system   //////////////
-
-	protected:
+	
+protected:
 
 	// Gets the IP address of the server. For connecting from the console
 	FString GetIPAddress();
 
 	class IOnlineSubsystem* Subsystem;
 
-
 private:
 
 	class UMainMenu* _Menu;
-	
-	// Call back for when finished searching for lobbies to join.
-	void OnSearchLobbyComplete(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
-	
+
+	CSteamID m_steamIDLobby;
 
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> InGameMenuClass;
@@ -141,5 +126,6 @@ private:
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
 
 };
