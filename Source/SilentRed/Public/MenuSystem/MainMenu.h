@@ -192,22 +192,146 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* Settings_QuitBtn;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* Video_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Audio_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Mouse_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Keyboard_Button;
+
 
 	////// SettingsVideo Menu //////
 	UPROPERTY(meta = (BindWidget))
 	UWidget* SettingsVideo;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsV_MainMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsV_MPBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsV_SinglePlayer;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsV_ProfileBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsV_QuitBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* VideoV_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* AudioV_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* MouseV_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* KeyboardV_Button;
+
+
 	////// SettingsAudio Menu //////
 	UPROPERTY(meta = (BindWidget))
 	UWidget* SettingsAudio;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsA_MainMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsA_MPBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsA_SinglePlayer;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsA_ProfileBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsA_QuitBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* AudioA_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* MouseA_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* KeyboardA_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* VideoA_Button;
+
 
 	////// SettingsMouse Menu //////
 	UPROPERTY(meta = (BindWidget))
 	UWidget* SettingsMouse;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsM_MainMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsM_MPBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsM_SinglePlayer;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsM_ProfileBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsM_QuitBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* KeyboardM_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* VideoM_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* MouseM_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* AudioM_Button;
+
+
 	////// SettingsKeyboard Menu //////
 	UPROPERTY(meta = (BindWidget))
 	UWidget* SettingsKeyboard;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsK_MainMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_K_MPBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsK_SinglePlayer;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsK_ProfileBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SettingsK_QuitBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* KeyboardK_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* VideoK_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* MouseK_Button;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* AudioK_Button;
+
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
@@ -236,6 +360,14 @@ private:
 
 	UFUNCTION()
 	void OpenSettingsMenu();
+	UFUNCTION()
+	void OpenVideoSettingsMenu();
+	UFUNCTION()
+	void OpenAudioSettingsMenu();
+	UFUNCTION()
+	void OpenMouseSettingsMenu();
+	UFUNCTION()
+	void OpenKeyboardSettingsMenu();
 
 	UFUNCTION()
 	void OpenMainMenu();

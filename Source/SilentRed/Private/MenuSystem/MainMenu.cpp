@@ -61,7 +61,7 @@ bool UMainMenu::Initialize()
 	
 	
 
-	//Main Menu//
+	/////////////////////Main Menu/////////////////////
 	MM_SPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
 	MM_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	MM_SettingsBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
@@ -69,7 +69,7 @@ bool UMainMenu::Initialize()
 	MM_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
 
-	//Multiplayer Menu
+	/////////////////////Multiplayer Menu///////////////////
 	MP_HostServerBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenHostServerMenu);
 	MP_JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinIPAddress);
 	MP_SPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
@@ -80,7 +80,8 @@ bool UMainMenu::Initialize()
 	//MP_ProfileBtn
 	MP_QuitGameBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
-	//Single Player Menu
+
+	/////////////////////Single Player Menu///////////////////
 	SP_MainMenuBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 	SP_SettingsMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
 	SP_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
@@ -88,7 +89,7 @@ bool UMainMenu::Initialize()
 	SP_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
 
-	//Host Server Menu
+	/////////////////////Host Server Menu///////////////////
 	if (!ensure(HS_StartServerBtn != nullptr)) return false;
 	HS_StartServerBtn->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 	HS_SPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
@@ -98,21 +99,57 @@ bool UMainMenu::Initialize()
 	HS_JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	HS_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
-	//SettingsMain Menu
+	///////////////////SettingsMain Menu/////////////////
 	Settings_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 	Settings_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	Settings_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
 	//Settings_ProfileBtn
 	Settings_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
-	//SettingsVideo Menu
+	Video_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenVideoSettingsMenu);
+	Audio_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenAudioSettingsMenu);
+	Mouse_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenMouseSettingsMenu);
+	Keyboard_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenKeyboardSettingsMenu);
 
-	//SettingsAudio Menu
+	/////////////////////SettingsVideo Menu///////////////////
+	SettingsV_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	SettingsV_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
+	//SettingsV_ProfileBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenProfileMenu);
+	SettingsV_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
+	SettingsV_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
+	AudioV_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenAudioSettingsMenu);
+	MouseV_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenMouseSettingsMenu);
+	KeyboardV_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenKeyboardSettingsMenu);
+	
+	/////////////////////SettingsAudio Menu///////////////////
+	SettingsA_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	SettingsA_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
+	//SettingsA_ProfileBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenProfileMenu);
+	SettingsA_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
+	SettingsA_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
+	VideoA_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenVideoSettingsMenu);
+	MouseA_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenMouseSettingsMenu);
+	KeyboardA_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenKeyboardSettingsMenu);
 
-	//SettingsMouse Menu
+	/////////////////////SettingsMouse Menu///////////////////
+	SettingsM_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	SettingsM_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
+	//SettingsM_ProfileBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenProfileMenu);
+	SettingsM_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
+	SettingsM_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
+	AudioM_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenAudioSettingsMenu);
+	VideoM_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenVideoSettingsMenu);
+	KeyboardM_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenKeyboardSettingsMenu);
 
-	//SettingsKeyboard Menu
-
+	/////////////////////SettingsKeyboard Menu///////////////////
+	SettingsK_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	Settings_K_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
+	//SettingsK_ProfileBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenProfileMenu);
+	SettingsK_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
+	SettingsK_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
+	AudioK_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenAudioSettingsMenu);
+	MouseK_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenMouseSettingsMenu);
+	VideoK_Button->OnClicked.AddDynamic(this, &UMainMenu::OpenVideoSettingsMenu);
 
 
 	return true;
@@ -170,6 +207,26 @@ void UMainMenu::RefreshServers()
 void UMainMenu::OpenSettingsMenu()
 {
 	MenuSwitcher->SetActiveWidget(SettingsMain);
+}
+
+void UMainMenu::OpenVideoSettingsMenu()
+{
+	MenuSwitcher->SetActiveWidget(SettingsVideo);
+}
+
+void UMainMenu::OpenAudioSettingsMenu()
+{
+	MenuSwitcher->SetActiveWidget(SettingsAudio);
+}
+
+void UMainMenu::OpenMouseSettingsMenu()
+{
+	MenuSwitcher->SetActiveWidget(SettingsMouse);
+}
+
+void UMainMenu::OpenKeyboardSettingsMenu()
+{
+	MenuSwitcher->SetActiveWidget(SettingsKeyboard);
 }
 
 void UMainMenu::OpenMainMenu()
