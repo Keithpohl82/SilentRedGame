@@ -65,7 +65,7 @@ protected:
 
 public:
 	
-	UPROPERTY(Transient, Replicated, BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	int32 TeamNumber;
 	
 	UPROPERTY(BlueprintReadWrite, Replicated)
