@@ -172,6 +172,27 @@ private:
 	UButton* HS_QuitBtn;
 
 
+	////// Settings Menu //////
+
+	UPROPERTY(meta = (BindWidget))
+	UWidget* SettingsMain;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_MainMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_MPBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_SinglePlayer;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_ProfileBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Settings_QuitBtn;
+
+
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
@@ -198,8 +219,8 @@ private:
 	//UFUNCTION()
 	//void OpenProfileMenu();
 
-	//UFUNCTION()
-	//void OpenSettingsMenu();
+	UFUNCTION()
+	void OpenSettingsMenu();
 
 	UFUNCTION()
 	void OpenMainMenu();

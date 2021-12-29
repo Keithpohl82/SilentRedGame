@@ -64,7 +64,7 @@ bool UMainMenu::Initialize()
 	//Main Menu//
 	MM_SPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
 	MM_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
-	//MM_SettingsBtn
+	MM_SettingsBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
 	//MM_ProfileBtn
 	MM_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
@@ -76,13 +76,13 @@ bool UMainMenu::Initialize()
 	MP_MainMenuBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 	MP_JoinIPBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinIPAddress);
 	MP_RefreshServersBtn->OnClicked.AddDynamic(this, &UMainMenu::RefreshServers);
-	//MP_SettingsBtn
+	MP_SettingsBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
 	//MP_ProfileBtn
 	MP_QuitGameBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
 	//Single Player Menu
 	SP_MainMenuBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
-	//SP_SettingsMenu
+	SP_SettingsMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
 	SP_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	//SP_ProfileBtn
 	SP_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
@@ -93,11 +93,17 @@ bool UMainMenu::Initialize()
 	HS_StartServerBtn->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 	HS_SPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
 	HS_MainMenuBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
-	//HS_SettingsBtn
+	HS_SettingsBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
 	//HS_ProfileBtn
 	HS_JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	HS_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
+	//Settings Menu
+	Settings_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+	Settings_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
+	Settings_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
+	//Settings_ProfileBtn
+	Settings_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
 	return true;
 	
@@ -151,6 +157,11 @@ void UMainMenu::RefreshServers()
 	{
 		MenuInterface->RefreshServerList();
 	}
+}
+
+void UMainMenu::OpenSettingsMenu()
+{
+	MenuSwitcher->SetActiveWidget(SettingsMain);
 }
 
 void UMainMenu::OpenMainMenu()
