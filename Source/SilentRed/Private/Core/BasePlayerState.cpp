@@ -6,6 +6,7 @@
 #include "SilentRed/Public/Characters/BaseCharacter.h"
 #include "SilentRed/Public/Core/MasterPlayerController.h"
 #include "SilentRed/Public/Core/MasterGameState.h"
+#include "SilentRed/Public/Core/MasterGameMode.h"
 
 
 
@@ -17,8 +18,7 @@ ABasePlayerState::ABasePlayerState(const FObjectInitializer& ObjectInitializer) 
 	GamePlayerID = GetUniqueID();
 	PlayersName = GetPlayerName();
 	NumShotsFired = 0;
-	
-
+	SetIsOnlyASpectator(true);
 }
 
 void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
@@ -26,7 +26,13 @@ void ABasePlayerState::SetTeamNum(int32 NewTeamNumber)
 	if (TeamNumber == 0)
 	{
 		TeamNumber = NewTeamNumber;
+		
+		AMasterGameMode* GM = Cast<AMasterGameMode>(GetWorld()->GetAuthGameMode());
+		
+		GM->RespawnPlayer();
 	}
+		SetIsOnlyASpectator(false);
+		UE_LOG(LogTemp, Warning, TEXT("Your team number is %i"), TeamNumber);
 }
 
 void ABasePlayerState::OnRep_SetTeam(int32 NewNumber)

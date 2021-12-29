@@ -24,7 +24,7 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnOb(TEXT("/Game/Characters/BP_TestPlayer"));
 	DefaultPawnClass = PlayerPawnOb.Class;
 
-
+	
 
 	PlayerStateClass = ABasePlayerState::StaticClass();
 	PlayerControllerClass = AMasterPlayerController::StaticClass();
@@ -34,7 +34,7 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 	//RoundTime = 300;
 
 	PlayerRespawnTime = 3;
-
+	
 }
 
 

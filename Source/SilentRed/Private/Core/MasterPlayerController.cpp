@@ -33,6 +33,7 @@ AMasterPlayerController::AMasterPlayerController(const FObjectInitializer& Objec
 	Deaths = 0;
 
 	KDA = Deaths / Kills; 
+
 }
 
 
