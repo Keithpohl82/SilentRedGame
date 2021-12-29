@@ -98,16 +98,24 @@ bool UMainMenu::Initialize()
 	HS_JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	HS_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
-	//Settings Menu
+	//SettingsMain Menu
 	Settings_MainMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 	Settings_MPBtn->OnClicked.AddDynamic(this, &UMainMenu::OpenMultiPlayerMenu);
 	Settings_SinglePlayer->OnClicked.AddDynamic(this, &UMainMenu::OpenSinglePlayerMenu);
 	//Settings_ProfileBtn
 	Settings_QuitBtn->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
+	//SettingsVideo Menu
+
+	//SettingsAudio Menu
+
+	//SettingsMouse Menu
+
+	//SettingsKeyboard Menu
+
+
+
 	return true;
-	
-	
 }
 
 void UMainMenu::HostServer()

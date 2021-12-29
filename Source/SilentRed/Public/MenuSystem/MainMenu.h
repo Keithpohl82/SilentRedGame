@@ -172,7 +172,7 @@ private:
 	UButton* HS_QuitBtn;
 
 
-	////// Settings Menu //////
+	////// SettingsMain Menu //////
 
 	UPROPERTY(meta = (BindWidget))
 	UWidget* SettingsMain;
@@ -193,6 +193,21 @@ private:
 	UButton* Settings_QuitBtn;
 
 
+	////// SettingsVideo Menu //////
+	UPROPERTY(meta = (BindWidget))
+	UWidget* SettingsVideo;
+
+	////// SettingsAudio Menu //////
+	UPROPERTY(meta = (BindWidget))
+	UWidget* SettingsAudio;
+
+	////// SettingsMouse Menu //////
+	UPROPERTY(meta = (BindWidget))
+	UWidget* SettingsMouse;
+
+	////// SettingsKeyboard Menu //////
+	UPROPERTY(meta = (BindWidget))
+	UWidget* SettingsKeyboard;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
