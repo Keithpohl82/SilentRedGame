@@ -73,8 +73,8 @@ void AMasterWeapon::Tick(float DeltaTime)
 
 void AMasterWeapon::StartReload(bool bFromReplication /*= false*/)
 {
-
-
+	UE_LOG(LogTemp, Log, TEXT("Reload timer called at start of startreload function."));
+	
 	if (!bFromReplication && GetLocalRole() < ROLE_Authority)
 	{
 		ServerReloadGun();
@@ -306,6 +306,7 @@ void AMasterWeapon::Fire()
 		
 		if (bIsShotGun)
 		{
+			Reload();
 			for (int32 i = 0; i < WeaponConfig.ShotgunPellets; i++)
 			{
 				Ammo--;
@@ -551,6 +552,7 @@ void AMasterWeapon::Reload()
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		ServerReloadGun();
+		UE_LOG(LogTemp, Log, TEXT("ServerReloadGun called from Reload"));
 	}
 
 	if (BackupAmmo >= AmmoPerClip)
@@ -565,6 +567,8 @@ void AMasterWeapon::Reload()
 		BackupAmmo = 0;
 		Ammo = Ammo + AmountToReload;
 	}
+	UE_LOG(LogTemp, Log, TEXT("Called from Reload"));
+
 }
 
 int AMasterWeapon::GetAmmo()

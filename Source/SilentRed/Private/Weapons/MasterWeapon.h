@@ -28,26 +28,26 @@ struct FWeaponData
 {
 	GENERATED_BODY()
 
-		//Time between shots for Rate of fire
-		UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		float TimeBetweenShots;
+	//Time between shots for Rate of fire
+	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
+	float TimeBetweenShots;
 
 	//Timer for reloading weapon 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		float ReloadDuration;
+	float ReloadDuration;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		float RecoilTimeBetweenShots;
+	float RecoilTimeBetweenShots;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		float BulletEndPoint;
+	float BulletEndPoint;
 
 	// Bullets fired per minuet
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		float RateOfFire;
+	float RateOfFire;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponStats)
-		int32 ShotgunPellets;
+	int32 ShotgunPellets;
 
 
 	//SetsDefaults

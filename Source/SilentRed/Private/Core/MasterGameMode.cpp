@@ -16,6 +16,7 @@
 #include "EngineUtils.h"
 #include "Engine/PlayerStartPIE.h"
 #include "Components/CapsuleComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 
@@ -24,7 +25,6 @@ AMasterGameMode::AMasterGameMode(const FObjectInitializer& ObjectInitializer) : 
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnOb(TEXT("/Game/Characters/BP_TestPlayer"));
 	DefaultPawnClass = PlayerPawnOb.Class;
 
-	
 
 	PlayerStateClass = ABasePlayerState::StaticClass();
 	PlayerControllerClass = AMasterPlayerController::StaticClass();
@@ -59,6 +59,7 @@ void AMasterGameMode::DefaultTimer()
 		// start match if necessary.
 		if (GetMatchState() == MatchState::WaitingToStart)
 		{
+			
 			StartMatch();
 		}
 
@@ -69,7 +70,6 @@ void AMasterGameMode::DefaultTimer()
 	if (MyGameState && MyGameState->RemainingTime > 0 && !MyGameState->bTimerPaused)
 	{
 		MyGameState->RemainingTime--;
-
 
 		if (MyGameState->RemainingTime <= 0)
 		{

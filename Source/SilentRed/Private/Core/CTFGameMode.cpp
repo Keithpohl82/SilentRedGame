@@ -20,13 +20,15 @@ ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(
 	NumTeams = 2;
 	bDelayedStart = true;
 
+	bStartPlayersAsSpectators = true;
+
 	bRedTeamWon = false;
 	bBlueTeamWon = false;
 
 	RedTeam = 1;
 	BlueTeam = 2;
 
-	ScoreToWin = 1;
+	//ScoreToWin = 1;
 	
 }
 
@@ -78,13 +80,13 @@ void ACTFGameMode::CheckForWinner()
 {
 	AMasterGameState* CurrentGameState = Cast<AMasterGameState>(GameState);
 
-	if (CurrentGameState->BluePoints == 2)
+	if (CurrentGameState->BluePoints == ScoreToWin)
 	{
 		FinishMatch();
 		bRedTeamWon = false;
 		bBlueTeamWon = true;
 	}
-	else if (CurrentGameState->RedPoints == 2)
+	else if (CurrentGameState->RedPoints == ScoreToWin)
 	{
 		FinishMatch();
 		bRedTeamWon = true;
@@ -142,7 +144,7 @@ void ACTFGameMode::FlagCapture(int32 TeamThatCapturedIt)
 	AMasterGameState* ThisGameState = GetGameState<AMasterGameState>();
 	if (ThisGameState)
 	{
-		if (TeamThatCapturedIt == RedTeam)
+		if (TeamThatCapturedIt == 1)
 		{	
 				ACTF_CapturePoint* Loc = Cast<ACTF_CapturePoint>(GetWorld());
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), CaptureSound, FVector::ZeroVector);
@@ -150,7 +152,7 @@ void ACTFGameMode::FlagCapture(int32 TeamThatCapturedIt)
 				ThisGameState->RedPoints++;
 				CheckForWinner();
 		}
-		else if (TeamThatCapturedIt == BlueTeam)
+		else if (TeamThatCapturedIt == 2)
 		{
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), CaptureSound, FVector::ZeroVector);
 

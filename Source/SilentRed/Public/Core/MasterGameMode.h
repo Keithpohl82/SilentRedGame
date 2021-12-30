@@ -17,7 +17,7 @@
 class APlayerStart;
 class ABasePlayerState;
 class FUniqueNetId;
-
+class UWidget;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
