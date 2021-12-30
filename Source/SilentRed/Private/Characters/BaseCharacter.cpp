@@ -56,7 +56,7 @@ ABaseCharacter::ABaseCharacter()
 
 	WeaponIndex = 0;
 
-	
+	bIsFlagOwner = false;
 
 }
 
@@ -70,6 +70,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, WeaponLoadout);
 	DOREPLIFETIME(ABaseCharacter, WeaponIndex);
 	DOREPLIFETIME(ABaseCharacter, DeathAnim);
+	DOREPLIFETIME(ABaseCharacter, bIsFlagOwner);
 }
 
 // Called when the game starts or when spawned

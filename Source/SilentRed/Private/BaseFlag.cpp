@@ -38,6 +38,7 @@ void ABaseFlag::AttachFlagToPlayer(ABaseCharacter* Player)
 			FName Socket = Player->FlagAttachSocketName;
 			this->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
 			SetOwner(Player);
+			Player->bIsFlagOwner = true;
 		}
 	}
 	else

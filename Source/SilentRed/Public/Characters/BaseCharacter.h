@@ -160,6 +160,9 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = Weapons)
 	int32 WeaponIndex;
 
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsFlagOwner;
+
 	static FOnBaseCharacterEquipWeapon NotifyEquipWeapon;
 	static FOnBaseCharacteUnEquipWeapon NotifyUnEquipWeapon;
 	

@@ -75,13 +75,22 @@ void UPlayerHealthComp::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 		if (GM)
 		{
 			AMasterPlayerController* KillerPC = Cast<AMasterPlayerController>(InstigatedBy);
+			AMasterPlayerController* VictimPC = Cast<AMasterPlayerController>(DamagedActor);
 			
 			KillerPC->Kills++;
 			KillerPC->Points++;
 			
+			ABasePlayerState* KillerPS = Cast<ABasePlayerState>(KillerPC);
+			ABasePlayerState* VictimPS = Cast<ABasePlayerState>(VictimPC);
+			FString KillersName = KillerPS->GetPlayerName();
+			FString VitimsName = VictimPS->GetPlayerName();
 			GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);
 
-			UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), InstigatedBy, GetOwner());
+			if (KillerPS != nullptr && VictimPS != nullptr)
+			{
+				UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), *KillersName, *VitimsName);
+			}
+			//UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), *KillersName, *VitimsName);
 		}
 	}
 }
