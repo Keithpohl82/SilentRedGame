@@ -86,7 +86,7 @@ void UPlayerHealthComp::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 
 			if (KillerPS != nullptr && VictimPS != nullptr)
 			{
-				UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), *KillersName, *VitimsName);
+				//UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), *KillersName, *VitimsName);
 			}
 			//UE_LOG(LogTemp, Log, TEXT(" %s, Killed %s"), *KillersName, *VitimsName);
 		}
