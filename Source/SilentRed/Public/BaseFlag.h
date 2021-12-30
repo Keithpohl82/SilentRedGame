@@ -21,6 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ABaseFlag();
 
+	
 	void AttachFlagToPlayer(ABaseCharacter* Player);//function to attach flag to player
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -45,11 +46,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Sounds)
 	USoundBase* FlagCaptured;
 
-
 	UPROPERTY(Replicated)
 	ACTF_CapturePoint* Destination;//object which shows where the destination is
 
-	void OnReachDest();//function that handles the event when destination is reached
+	void OnReachDest(ABaseCharacter* FlagCarrier);//function that handles the event when destination is reached
 
 
 public:

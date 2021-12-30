@@ -8,6 +8,7 @@
 #include "SilentRed/Public/GamePlay/TeamsPlayerStart.h"
 #include "SilentRed/Public/Core/BasePlayerState.h"
 #include "SilentRed/Public/Core/MasterPlayerController.h"
+#include "SilentRed/Public/BaseFlag.h"
 
 ACTFGameMode::ACTFGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -150,6 +151,11 @@ void ACTFGameMode::FlagCapture(int32 TeamThatCapturedIt)
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), CaptureSound, FVector::ZeroVector);
 				
 				ThisGameState->RedPoints++;
+
+				//AMasterPlayerController* FlagCarrier = Cast<AMasterPlayerController>();
+				//ABaseFlag* CapturedFlag = Cast<ABaseFlag>(CapturedFlag);
+
+				//UE_LOG(LogTemp, Warning, TEXT("%s Captured the %s"), *FlagCarrier->GetPlayerState()->GetPlayerName(), *CapturedFlag->GetName());
 				CheckForWinner();
 		}
 		else if (TeamThatCapturedIt == 2)

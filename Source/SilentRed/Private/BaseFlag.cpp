@@ -38,6 +38,7 @@ void ABaseFlag::AttachFlagToPlayer(ABaseCharacter* Player)
 			FName Socket = Player->FlagAttachSocketName;
 			this->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
 			SetOwner(Player);
+			UE_LOG(LogTemp, Warning, TEXT("%s Stole the %s"), *Player->GetPlayerState()->GetPlayerName(), *this->GetName());
 			Player->bIsFlagOwner = true;
 		}
 	}
@@ -145,14 +146,18 @@ bool ABaseFlag::ServerBeginPlay_Validate()
 	return true;
 }
 
-void ABaseFlag::OnReachDest()
+void ABaseFlag::OnReachDest(ABaseCharacter* FlagCarrier)
 {
 
 		ACTFGameMode* GM = Cast<ACTFGameMode>(GetWorld()->GetAuthGameMode());
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
-
+		
+		UE_LOG(LogTemp, Warning, TEXT("%s Captured the %s"), *FlagCarrier->GetPlayerState()->GetPlayerName(), *this->GetName());
+		ABasePlayerState* PlayerThatCappedTheFlag = Cast<ABasePlayerState>(FlagCarrier->GetPlayerState());
+		AMasterPlayerController* CarrierController = Cast<AMasterPlayerController>(FlagCarrier->GetController());
+		CarrierController->Points += 10; 
 		Detach();
 
 		if (GM)
@@ -185,7 +190,7 @@ void ABaseFlag::Tick(float DeltaTime)
 		{
 			if (Destination->GetDistanceTo(FlagOwner) <= 200.f)
 			{
-				OnReachDest();
+				OnReachDest(FlagOwner);
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("dest reached"));
 
 				DrawDebugSphere(

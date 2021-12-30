@@ -22,8 +22,6 @@ void UPlayerHealthComp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 // Sets default values for this component's properties
 UPlayerHealthComp::UPlayerHealthComp()
 {
-	
-	
 	SetIsReplicatedByDefault(true);
 	DefaultHealth = 100;
 	DefaultArmor = 100;
